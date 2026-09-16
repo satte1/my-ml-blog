@@ -1,0 +1,269 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Feature Selection — notebook.</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,500;0,9..144,600;1,9..144,500&family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans:wght@400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../style.css">
+</head>
+<body>
+
+<div class="wrap">
+  <header>
+    <div class="nav-row">
+      <div class="brand">notebook.</div>
+      <nav>
+        <a href="../index.html#topics">Topics</a>
+        <a href="../index.html#about">About</a>
+        <a href="../index.html#courses">Courses</a>
+        <a href="../index.html#book" class="cta">Book a Call</a>
+      </nav>
+    </div>
+  </header>
+
+  <div class="article-header">
+    <a href="../index.html#topics" class="back-link">← Back to all articles</a>
+    <div class="article-meta">
+      <span>SEP 2026</span>
+      <span>By Satyam</span>
+      <span class="tag">Machine Learning</span>
+    </div>
+    <h1>Feature Selection</h1>
+  </div>
+
+  <article class="article-body">
+
+    <h2>What is Feature Selection?</h2>
+    <p>When we build a Machine Learning model, we use a dataset that has many <strong>columns</strong>. In ML language, each column (except the target/output column) is called a <strong>feature</strong>.</p>
+    <p>But here is the problem — <strong>not every column is useful.</strong> Some columns help the model predict better. Some columns are just noise and confuse the model. Feature Selection means:</p>
+    <blockquote>Picking only the important columns and removing the useless ones, before training the model.</blockquote>
+
+    <h3>Simple Example</h3>
+    <p>Suppose we want to predict the <strong>Price of a House</strong>. We have this data:</p>
+    <table>
+      <tr><th>House_Size (sq ft)</th><th>Bedrooms</th><th>Owner_Favorite_Color</th><th>Price (Lakhs)</th></tr>
+      <tr><td>1000</td><td>2</td><td>Blue</td><td>50</td></tr>
+      <tr><td>1500</td><td>3</td><td>Red</td><td>70</td></tr>
+      <tr><td>2000</td><td>4</td><td>Green</td><td>90</td></tr>
+      <tr><td>800</td><td>2</td><td>Blue</td><td>45</td></tr>
+    </table>
+    <p>Look at the column <strong>Owner_Favorite_Color</strong>. Does the owner's favorite color decide the price of the house? No! It has <strong>nothing to do with price</strong>. This column is useless for our model.</p>
+    <p>But <strong>House_Size</strong> and <strong>Bedrooms</strong> clearly affect the price — bigger house, more bedrooms, more price.</p>
+    <p>So a good Feature Selection process would say:</p>
+    <ul>
+      <li>Keep: <code>House_Size</code>, <code>Bedrooms</code></li>
+      <li>Remove: <code>Owner_Favorite_Color</code></li>
+    </ul>
+    <p>This makes the model simpler, faster, and more accurate, because it is not getting confused by useless information.</p>
+    <p>There are <strong>3 major types</strong> of Feature Selection methods:</p>
+    <ol>
+      <li>Filter Method</li>
+      <li>Wrapper Method</li>
+      <li>Embedded Method</li>
+    </ol>
+    <p>In this post, we will start with <strong>Filter Method</strong> in detail. Wrapper Method and Embedded Method are covered in the sections below (full detail coming in the next posts).</p>
+
+    <hr>
+
+    <h2>1. Filter Method</h2>
+    <p>Filter Method checks each feature <strong>separately</strong>, using statistics — it does <strong>not</strong> involve training any ML model. We just look at each column and ask:</p>
+    <blockquote>"Does this column have a real relationship with the target column, or not?"</blockquote>
+    <p>If a feature has a strong relationship with the target, we keep it. If it has almost no relationship, we drop it.</p>
+    <p>Think of it like a <strong>first-round filter</strong> — like when a company checks resumes before calling people for an interview. Filter Method quickly removes the useless features before we even build the model. That's why it's fast and simple.</p>
+    <p>The two most common statistical tests used in Filter Method are:</p>
+    <ol>
+      <li><strong>ANOVA (Analysis of Variance)</strong> — used when feature is a <strong>Number</strong> and target is a <strong>Category</strong></li>
+      <li><strong>Chi-Square Test</strong> — used when both feature and target are <strong>Categories</strong></li>
+    </ol>
+    <p>Let's understand both, one by one, with simple math and pandas code.</p>
+
+    <hr>
+
+    <h3>1.1 ANOVA (Analysis of Variance)</h3>
+
+    <h4>When to use it?</h4>
+    <p>Use ANOVA when:</p>
+    <ul>
+      <li>Your <strong>feature (input column)</strong> has numbers — like Age, Salary, Marks</li>
+      <li>Your <strong>target (output column)</strong> has categories — like Pass/Fail, Yes/No</li>
+    </ul>
+
+    <h4>The Idea (in simple words)</h4>
+    <p>ANOVA checks: <em>"If I split the numeric feature into groups based on the target category, are the group averages very different from each other, or almost the same?"</em></p>
+    <ul>
+      <li>If the group averages are <strong>very different</strong> → the feature is useful, keep it.</li>
+      <li>If the group averages are <strong>almost the same</strong> → the feature is useless, drop it.</li>
+    </ul>
+
+    <h4>Small Example</h4>
+    <p>We want to predict if a student <strong>Passes or Fails</strong> an exam, using <strong>Study_Hours</strong> as a feature.</p>
+    <table>
+      <tr><th>Student</th><th>Study_Hours</th><th>Result</th></tr>
+      <tr><td>A</td><td>1</td><td>Fail</td></tr>
+      <tr><td>B</td><td>2</td><td>Fail</td></tr>
+      <tr><td>C</td><td>8</td><td>Pass</td></tr>
+      <tr><td>D</td><td>9</td><td>Pass</td></tr>
+    </table>
+    <p>Split <code>Study_Hours</code> by <code>Result</code>:</p>
+    <ul>
+      <li>Fail group: 1, 2 → Average = 1.5</li>
+      <li>Pass group: 8, 9 → Average = 8.5</li>
+    </ul>
+    <p>The averages (1.5 vs 8.5) are <strong>very far apart</strong>. This tells us <code>Study_Hours</code> clearly separates Pass and Fail students. So ANOVA will give this feature a <strong>high score</strong> — meaning it is important, keep it.</p>
+
+    <h4>The Formula (simplified)</h4>
+    <p>ANOVA calculates something called the <strong>F-value</strong>:</p>
+    <pre><code>F = (Variance BETWEEN groups) / (Variance WITHIN groups)</code></pre>
+    <ul>
+      <li><strong>Variance between groups</strong> = how different the group averages are from the overall average.</li>
+      <li><strong>Variance within groups</strong> = how spread out the values are inside each group.</li>
+    </ul>
+    <p><strong>Simple rule:</strong> Bigger F-value = feature is more useful. Smaller F-value (close to 0 or 1) = feature is not useful.</p>
+    <p>You don't need to calculate this by hand every time — Python does it for us. Let's see how.</p>
+
+    <h4>Doing ANOVA with Pandas + Sklearn</h4>
+    <pre><code>import pandas as pd
+from sklearn.feature_selection import f_classif
+
+# Step 1: Create the dataframe
+data = {
+    'Study_Hours': [1, 2, 3, 8, 9, 7, 2, 8],
+    'Result':      ['Fail', 'Fail', 'Fail', 'Pass', 'Pass', 'Pass', 'Fail', 'Pass']
+}
+df = pd.DataFrame(data)
+
+# Step 2: Separate feature (X) and target (y)
+X = df[['Study_Hours']]   # feature must be numeric
+y = df['Result']          # target is category
+
+# Step 3: Apply ANOVA (f_classif)
+f_score, p_value = f_classif(X, y)
+
+print("F-score:", f_score)
+print("p-value:", p_value)</code></pre>
+
+    <p><strong>How to read the result:</strong></p>
+    <ul>
+      <li><strong>F-score</strong> — higher value means the feature is more useful (as we discussed above).</li>
+      <li><strong>p-value</strong> — this tells us if the result is trustworthy.
+        <ul>
+          <li>If p-value is <strong>less than 0.05</strong> → the feature is <strong>important</strong>, keep it.</li>
+          <li>If p-value is <strong>more than 0.05</strong> → the feature is <strong>not important</strong>, you can drop it.</li>
+        </ul>
+      </li>
+    </ul>
+    <p>In our example, <code>Study_Hours</code> will get a high F-score and a very small p-value, confirming it is a strong feature for predicting Pass/Fail.</p>
+
+    <hr>
+
+    <h3>1.2 Chi-Square Test (χ²)</h3>
+
+    <h4>When to use it?</h4>
+    <p>Use Chi-Square when:</p>
+    <ul>
+      <li>Your <strong>feature (input column)</strong> is a category — like Gender, City, Color</li>
+      <li>Your <strong>target (output column)</strong> is also a category — like Yes/No, Pass/Fail</li>
+    </ul>
+
+    <h4>The Idea (in simple words)</h4>
+    <p>Chi-Square checks: <em>"Is there a real connection between two category columns, or are they just showing random, unrelated numbers by chance?"</em></p>
+    <p>It compares:</p>
+    <ul>
+      <li><strong>Observed values</strong> — what we actually see in our data</li>
+      <li><strong>Expected values</strong> — what we would see if there was <strong>no relationship at all</strong> between the feature and target</li>
+    </ul>
+    <p>If Observed and Expected are <strong>very different</strong>, it means there <strong>is</strong> a real relationship — keep the feature. If they are <strong>almost the same</strong>, there is <strong>no relationship</strong> — drop the feature.</p>
+
+    <h4>Small Example</h4>
+    <p>We want to check if <strong>Gender</strong> affects whether a person <strong>Buys a Product</strong>.</p>
+    <table>
+      <tr><th>Person</th><th>Gender</th><th>Bought_Product</th></tr>
+      <tr><td>1</td><td>Male</td><td>Yes</td></tr>
+      <tr><td>2</td><td>Male</td><td>Yes</td></tr>
+      <tr><td>3</td><td>Male</td><td>No</td></tr>
+      <tr><td>4</td><td>Female</td><td>No</td></tr>
+      <tr><td>5</td><td>Female</td><td>No</td></tr>
+      <tr><td>6</td><td>Female</td><td>No</td></tr>
+    </table>
+    <p>First, make a <strong>contingency table</strong> (a simple count table):</p>
+    <table>
+      <tr><th></th><th>Bought = Yes</th><th>Bought = No</th><th>Total</th></tr>
+      <tr><td>Male</td><td>2</td><td>1</td><td>3</td></tr>
+      <tr><td>Female</td><td>0</td><td>3</td><td>3</td></tr>
+      <tr><td>Total</td><td>2</td><td>4</td><td>6</td></tr>
+    </table>
+    <p><strong>Expected value formula</strong> (if Gender had NO effect on buying):</p>
+    <pre><code>Expected = (Row Total × Column Total) / Grand Total</code></pre>
+    <p>For Male &amp; Yes: Expected = (3 × 2) / 6 = <strong>1</strong><br>
+    But Observed Male &amp; Yes = <strong>2</strong></p>
+    <p>Since Observed (2) is different from Expected (1), this hints Gender might actually be related to buying behaviour.</p>
+
+    <h4>The Formula (simplified)</h4>
+    <pre><code>Chi-Square (χ²) = Sum of [ (Observed − Expected)² / Expected ]</code></pre>
+    <p>We do this calculation for every cell in the table, then add them all up. <strong>Bigger Chi-Square value = stronger relationship = keep the feature.</strong></p>
+
+    <h4>Doing Chi-Square with Pandas + Sklearn</h4>
+    <pre><code>import pandas as pd
+from sklearn.feature_selection import chi2
+from sklearn.preprocessing import LabelEncoder
+
+# Step 1: Create the dataframe
+data = {
+    'Gender': ['Male', 'Male', 'Male', 'Female', 'Female', 'Female'],
+    'Bought_Product': ['Yes', 'Yes', 'No', 'No', 'No', 'No']
+}
+df = pd.DataFrame(data)
+
+# Step 2: Convert categories into numbers (Chi-square needs numeric input)
+le = LabelEncoder()
+df['Gender_encoded'] = le.fit_transform(df['Gender'])   # Male=1, Female=0 (example)
+df['Target_encoded'] = le.fit_transform(df['Bought_Product'])
+
+X = df[['Gender_encoded']]
+y = df['Target_encoded']
+
+# Step 3: Apply Chi-Square
+chi_score, p_value = chi2(X, y)
+
+print("Chi-Square score:", chi_score)
+print("p-value:", p_value)</code></pre>
+
+    <p><strong>How to read the result:</strong></p>
+    <ul>
+      <li>Same rule as before — <strong>higher Chi-Square score</strong> and <strong>p-value &lt; 0.05</strong> means the feature has a real relationship with the target, so keep it.</li>
+    </ul>
+
+    <hr>
+
+    <h2>Quick Recap</h2>
+    <table>
+      <tr><th>Test</th><th>Feature Type</th><th>Target Type</th><th>Keeps feature when...</th></tr>
+      <tr><td>ANOVA</td><td>Numeric</td><td>Category</td><td>F-score is high, p-value &lt; 0.05</td></tr>
+      <tr><td>Chi-Square</td><td>Category</td><td>Category</td><td>Chi-Square score is high, p-value &lt; 0.05</td></tr>
+    </table>
+    <p>Filter Method is usually the <strong>first step</strong> in Feature Selection — quick, cheap, and done before any model training.</p>
+
+    <hr>
+
+    <h2>2. Wrapper Method</h2>
+    <p><em>(Coming in the next post — full explanation with examples.)</em></p>
+
+    <hr>
+
+    <h2>3. Embedded Method</h2>
+    <p><em>(Coming in the next post — full explanation with examples.)</em></p>
+
+  </article>
+
+  <footer>
+    <div>© 2026 notebook. · articles added regularly</div>
+    <div>
+      <a href="../index.html">Home</a>
+    </div>
+  </footer>
+</div>
+
+</body>
+</html>

@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Learn with Satyam — Python, ML, Deep Learning, AI & Data Analysis</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,500;0,9..144,600;1,9..144,500&family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans:wght@400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<div class="wrap">
+  <header>
+    <div class="nav-row">
+      <div class="brand">notebook.</div>
+      <nav>
+        <a href="#topics">Topics</a>
+        <a href="#about">About</a>
+        <a href="#courses">Courses</a>
+        <a href="#book" class="cta">Book a Call</a>
+      </nav>
+    </div>
+  </header>
+
+  <section class="hero">
+    <span class="stamp">a learning journal, written in plain English</span>
+    <h1>Where confusing topics finally start making sense.</h1>
+    <p class="sub">This is where I write about what I'm teaching and learning, and where my students write too. Every article is kept in simple English, so nothing gets lost in translation. New topics are added regularly across five areas.</p>
+  </section>
+
+  <div class="cat-bar" id="cat-bar">
+    <button class="active" onclick="filterCat('all', this)">All</button>
+    <button onclick="filterCat('python', this)">Python</button>
+    <button onclick="filterCat('ml', this)">Machine Learning</button>
+    <button onclick="filterCat('dl', this)">Deep Learning</button>
+    <button onclick="filterCat('ai', this)">AI</button>
+    <button onclick="filterCat('data', this)">Data Analysis</button>
+  </div>
+
+  <section id="topics">
+    <div class="section-head">
+      <h2>Latest articles</h2>
+      <span class="meta" id="entry-count">1 article</span>
+    </div>
+
+    <div class="entry" data-cat="ml">
+      <div class="meta-col">SEP 2026<span class="author">By Satyam</span></div>
+      <div>
+        <h3><a href="posts/feature-selection.html">Feature Selection</a></h3>
+        <p>What feature selection means, why some columns hurt your model more than they help, and a full walkthrough of the Filter Method — ANOVA and Chi-Square — with pandas and sklearn code.</p>
+        <span class="tag">Machine Learning</span>
+      </div>
+    </div>
+
+    <div class="coming-soon" data-cat="python">
+      <span class="label">Python</span>
+      <span>New articles coming soon in this section.</span>
+    </div>
+    <div class="coming-soon" data-cat="dl">
+      <span class="label">Deep Learning</span>
+      <span>New articles coming soon in this section.</span>
+    </div>
+    <div class="coming-soon" data-cat="ai">
+      <span class="label">AI</span>
+      <span>New articles coming soon in this section.</span>
+    </div>
+    <div class="coming-soon" data-cat="data">
+      <span class="label">Data Analysis</span>
+      <span>New articles coming soon in this section.</span>
+    </div>
+  </section>
+
+  <section id="about">
+    <div class="about-grid">
+      <div>
+        <h2>About this site</h2>
+        <p>I train working professionals and students in data science — Python, SQL, Power BI and machine learning — at Ambuja Foundation in Jaipur. I also work as an MIS/data analyst, and I hold an MSc in Data Science alongside a background in Electronics &amp; Communications Engineering.</p>
+        <p>This site is a shared learning journal. I write here as I study new topics, and my students write here too as they learn — every article kept in simple, clear English so it's easy to follow regardless of background.</p>
+      </div>
+      <div>
+        <div class="credentials">
+          <div><strong>Role</strong> — Data Science Trainer, Ambuja Foundation</div>
+          <div><strong>Base</strong> — Jaipur, Rajasthan</div>
+          <div><strong>Teaches</strong> — Python · SQL · Power BI (DAX) · ML</div>
+          <div><strong>Education</strong> — MSc Data Science, Chandigarh University</div>
+          <div><strong>Background</strong> — B.E. Electronics &amp; Communications</div>
+          <div><strong>Experience</strong> — 8+ years across training &amp; data science</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section id="courses">
+    <div class="section-head"><h2>Courses &amp; 1:1 calls</h2></div>
+    <div class="two-col">
+      <div class="panel">
+        <div class="eyebrow">in the works</div>
+        <h3>Video courses, built from these same articles</h3>
+        <p>Once a topic has been tested here in writing, it becomes the outline for a short video lesson. The first course is being scoped now — get an email the day it opens.</p>
+        <div class="signup">
+          <input type="email" placeholder="you@email.com" aria-label="Email address">
+          <button type="button">Notify me</button>
+        </div>
+      </div>
+      <div class="panel" id="book">
+        <div class="eyebrow">available now</div>
+        <h3>Book a 1:1 call</h3>
+        <p>Want help with a specific topic, a career question, or a project review? Book a short call directly on my calendar.</p>
+        <a class="btn" href="https://calendly.com/your-username" target="_blank" rel="noopener">Book a call →</a>
+      </div>
+    </div>
+  </section>
+
+  <footer>
+    <div>© 2026 Learn with Satyam · articles added regularly</div>
+    <div>
+      <a href="#">LinkedIn</a>
+      <a href="#">GitHub</a>
+      <a href="#">Newsletter</a>
+    </div>
+  </footer>
+</div>
+
+<script>
+  function filterCat(cat, btn){
+    document.querySelectorAll('#cat-bar button').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+    var articleCount = 0;
+    document.querySelectorAll('.entry').forEach(function(e){
+      var show = (cat === 'all' || e.getAttribute('data-cat') === cat);
+      e.style.display = show ? 'grid' : 'none';
+      if(show) articleCount++;
+    });
+    document.querySelectorAll('.coming-soon').forEach(function(e){
+      var show = (cat === 'all' || e.getAttribute('data-cat') === cat);
+      e.style.display = show ? 'flex' : 'none';
+    });
+    document.getElementById('entry-count').textContent = articleCount + (articleCount === 1 ? ' article' : ' articles');
+  }
+</script>
+</body>
+</html>
