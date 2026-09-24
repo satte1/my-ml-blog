@@ -1,0 +1,345 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Functions and lambda: notebook.</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,500;0,9..144,600;1,9..144,500&family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans:wght@400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../style.css">
+</head>
+<body>
+
+<div class="wrap">
+  <header>
+    <div class="nav-row">
+      <div class="brand">notebook.</div>
+      <nav>
+        <a href="../index.html#topics">Topics</a>
+        <a href="../index.html#about">About</a>
+        <a href="../index.html#courses">Courses</a>
+        <a href="../index.html#book" class="cta">Book a Call</a>
+      </nav>
+    </div>
+  </header>
+
+  <div class="article-header">
+    <a href="../index.html#topics" class="back-link">← Back to all articles</a>
+    <div class="article-meta">
+      <span>SEP 2026</span>
+      <span>By Mukesh</span>
+      <span class="tag">Python</span>
+    </div>
+    <h1>Functions and lambda</h1>
+  </div>
+
+  <article class="article-body">
+
+    <h2>Why This Topic Matters</h2>
+    <p>So far every example we wrote ran once, top to bottom. A <strong>function</strong> lets you package a piece of code, give it a name, and run it again and again, with different inputs, whenever you need it. It is one of the biggest steps from writing small scripts to writing real programs.</p>
+    <p>By the end of this post you will know:</p>
+    <ol>
+      <li>How to define and call a function</li>
+      <li>Parameters, default values, and returning a result</li>
+      <li>Flexible arguments with <code>*args</code> and <code>**kwargs</code></li>
+      <li>Variable scope, what a function can and cannot see</li>
+      <li>What a <code>lambda</code> is, and when it is genuinely useful</li>
+    </ol>
+
+    <hr>
+
+    <h2>1. Defining and Calling a Function</h2>
+
+    <h3>1.1 What is a Function?</h3>
+    <blockquote>A function is a named, reusable block of code that runs only when you call it.</blockquote>
+    <p>You have already used functions like <code>print()</code>, <code>len()</code> and <code>int()</code>. Now we will write our own.</p>
+
+    <h4>Simple Example</h4>
+    <pre><code>def greet():
+    print("Hello!")
+
+greet()    # Hello!</code></pre>
+    <p><code>def</code> starts the definition, <code>greet</code> is the name, and the empty <code>()</code> means it takes no input. Nothing happens when you <em>define</em> the function, code inside it only runs when you <em>call</code> it with <code>greet()</code>.</p>
+
+    <h3>1.2 Parameters: Giving a Function Input</h3>
+    <pre><code>def greet2(name):
+    print(f"Hello, {name}!")
+
+greet2("Satyam")    # Hello, Satyam!</code></pre>
+    <p><code>name</code> here is a <strong>parameter</strong>, a placeholder for whatever value you pass in when you call the function. The value you actually pass, <code>"Satyam"</code>, is called an <strong>argument</strong>.</p>
+
+    <h3>1.3 return: Sending a Value Back</h3>
+    <p><code>print()</code> only shows a value on screen, it does not give the value back to your code. To get a result back, use <code>return</code>.</p>
+    <pre><code>def add(a, b):
+    return a + b
+
+result = add(3, 5)
+print(result)    # 8</code></pre>
+    <p>As soon as Python hits <code>return</code>, it exits the function immediately and sends that value back to wherever the function was called. You can then store it in a variable, print it, or use it in another calculation.</p>
+    <pre><code>def square(n):
+    return n * n
+
+print(square(4))          # 16
+print(square(4) + 1)      # 17, the returned value can be used directly</code></pre>
+
+    <hr>
+
+    <h2>2. Default Values and Keyword Arguments</h2>
+
+    <h3>2.1 Default Parameter Values</h3>
+    <p>Give a parameter a default value, and the caller can skip it entirely:</p>
+    <pre><code>def describe(name, age=18):
+    print(f"{name} is {age} years old")
+
+describe("A")          # A is 18 years old   (default used)
+describe("B", 25)      # B is 25 years old   (default overridden)</code></pre>
+    <p>A parameter with a default must come <strong>after</strong> the ones without a default. Python will not let you write <code>def describe(age=18, name)</code>.</p>
+
+    <h3>2.2 Calling with Keyword Arguments</h3>
+    <p>You can also name the arguments when calling, so their order stops mattering:</p>
+    <pre><code>def total(a, b, c=0, d=0):
+    return a + b + c + d
+
+print(total(1, 2))            # 3
+print(total(1, 2, c=3))       # 6
+print(total(a=1, b=2, d=4))   # 7</code></pre>
+    <p>This is especially useful when a function has several optional parameters, since you only need to name the ones you are actually setting.</p>
+
+    <hr>
+
+    <h2>3. Flexible Arguments: *args and **kwargs</h2>
+
+    <h3>3.1 *args, Any Number of Positional Arguments</h3>
+    <p>Use <code>*args</code> when you do not know in advance how many values will be passed in.</p>
+    <pre><code>def add_all(*nums):
+    return sum(nums)
+
+print(add_all(1, 2, 3, 4))    # 10</code></pre>
+    <p>Inside the function, <code>nums</code> becomes a tuple holding every value that was passed, however many there are.</p>
+
+    <h3>3.2 **kwargs, Any Number of Named Arguments</h3>
+    <pre><code>def show(**info):
+    for key, value in info.items():
+        print(key, value)
+
+show(name="A", age=25)
+# name A
+# age 25</code></pre>
+    <p><code>info</code> becomes a dictionary, so you can loop over it just like the dictionaries we covered earlier.</p>
+
+    <h3>3.3 Forcing Keyword-Only Arguments</h3>
+    <p>A single <code>*</code> on its own forces everything after it to be passed by name:</p>
+    <pre><code>def make_full_name(first, *, last):
+    return first + " " + last
+
+print(make_full_name("A", last="B"))    # A B
+print(make_full_name("A", "B"))         # TypeError</code></pre>
+    <p>This is useful when a function has arguments that are easy to mix up by position, forcing a name makes the calling code clearer.</p>
+
+    <hr>
+
+    <h2>4. Variable Scope</h2>
+
+    <h3>4.1 Local vs Global</h3>
+    <blockquote>A variable created inside a function only exists inside that function. This is called its scope.</blockquote>
+    <pre><code>x = 10
+
+def change():
+    x = 20            # this is a NEW local variable, not the outer one
+    print("inside", x)
+
+change()               # inside 20
+print("outside", x)    # outside 10, unchanged</code></pre>
+    <p>The <code>x</code> inside <code>change()</code> is a completely separate variable from the <code>x</code> outside. This is intentional, it stops a function from accidentally breaking code elsewhere in your program.</p>
+
+    <h3>4.2 The global Keyword</h3>
+    <p>If you genuinely need to change a variable from outside the function, use <code>global</code>:</p>
+    <pre><code>x = 10
+
+def change2():
+    global x
+    x = 99
+
+change2()
+print(x)    # 99</code></pre>
+    <p>Use this sparingly. Functions that quietly change variables outside themselves are harder to follow and to debug. Most of the time, returning a value and reassigning it is clearer.</p>
+
+    <hr>
+
+    <h2>5. lambda: a Small, Anonymous Function</h2>
+
+    <h3>5.1 What is it?</h3>
+    <blockquote>A lambda is a short function written in a single line, with no name and no def keyword.</blockquote>
+    <pre><code>square_l = lambda n: n * n
+print(square_l(5))    # 25
+
+add_l = lambda a, b: a + b
+print(add_l(3, 4))    # 7</code></pre>
+    <p>This does exactly the same job as:</p>
+    <pre><code>def square_l(n):
+    return n * n</code></pre>
+    <p>A <code>lambda</code> always has an implicit <code>return</code>, you just write the expression, no <code>return</code> keyword needed.</p>
+
+    <h3>5.2 Where lambda Actually Gets Used</h3>
+    <p>Writing <code>square_l = lambda n: n * n</code> is possible, but a normal <code>def</code> is usually clearer for anything you will name and reuse. The real value of <code>lambda</code> is as a quick, throwaway function passed straight into another function.</p>
+
+    <h4>With filter(), keep only matching items</h4>
+    <pre><code>nums = [1, 2, 3, 4, 5, 6]
+evens = list(filter(lambda n: n % 2 == 0, nums))
+print(evens)    # [2, 4, 6]</code></pre>
+
+    <h4>With map(), transform every item</h4>
+    <pre><code>squares = list(map(lambda n: n * n, nums))
+print(squares)    # [1, 4, 9, 16, 25, 36]</code></pre>
+
+    <h4>With sort(), a custom sort order</h4>
+    <pre><code>people = [("A", 25), ("B", 20), ("C", 30)]
+people.sort(key=lambda p: p[1])    # sort by age, the second item
+print(people)    # [('B', 20), ('A', 25), ('C', 30)]</code></pre>
+    <p>Here <code>key=lambda p: p[1]</code> tells <code>.sort()</code> which part of each item to compare. Without it, Python would try to sort the tuples directly.</p>
+
+    <h4>With reduce(), combine everything into one value</h4>
+    <pre><code>from functools import reduce
+
+total2 = reduce(lambda a, b: a + b, nums)
+print(total2)    # 21</code></pre>
+
+    <h3>5.3 lambda vs def, When to Use Which</h3>
+    <table>
+      <tr><th>Situation</th><th>Use</th></tr>
+      <tr><td>The function needs a name you will call again elsewhere</td><td><code>def</code></td></tr>
+      <tr><td>The function has more than one line, or needs a loop or condition inside</td><td><code>def</code></td></tr>
+      <tr><td>You need it only once, as an argument to <code>sort()</code>, <code>map()</code> or <code>filter()</code></td><td><code>lambda</code></td></tr>
+      <tr><td>The whole function is a single simple expression</td><td>Either works, <code>lambda</code> if it stays inline</td></tr>
+    </table>
+    <p>A normal function can also be passed around the same way a lambda can:</p>
+    <pre><code>def is_even(n):
+    return n % 2 == 0
+
+print(list(filter(is_even, nums)))    # [2, 4, 6]</code></pre>
+    <p>This is exactly the same idea as before, functions in Python are values too, you can pass them into other functions just like a number or a string.</p>
+
+    <hr>
+
+    <h2>6. Functions That Take Other Functions</h2>
+    <p>Because functions are values, one function can accept another function as an argument. This is the same idea that makes <code>map()</code>, <code>filter()</code> and <code>sort(key=...)</code> work.</p>
+    <pre><code>def apply_twice(f, x):
+    return f(f(x))
+
+result = apply_twice(lambda n: n + 3, 10)
+print(result)    # 16, since 10 + 3 = 13, then 13 + 3 = 16</code></pre>
+
+    <hr>
+
+    <h2>7. Practical Examples</h2>
+
+    <h3>Example 1: Safe Division</h3>
+    <pre><code>def divide(a, b):
+    if b == 0:
+        return None
+    return a / b
+
+print(divide(10, 2))    # 5.0
+print(divide(10, 0))    # None</code></pre>
+    <p>Returning <code>None</code> instead of letting the program crash lets the calling code decide what to do about a bad input.</p>
+
+    <h3>Example 2: Sorting a List of Products by Price</h3>
+    <pre><code>products = [
+    {"name": "Pen", "price": 10},
+    {"name": "Bag", "price": 500},
+    {"name": "Book", "price": 150}
+]
+
+products.sort(key=lambda p: p["price"])
+for p in products:
+    print(p["name"], p["price"])
+
+# Pen 10
+# Book 150
+# Bag 500</code></pre>
+
+    <h3>Example 3: Filtering and Transforming Together</h3>
+    <pre><code>marks = [45, 60, 90, 30, 75, 55]
+
+passed = list(filter(lambda m: m >= 40, marks))
+scaled = list(map(lambda m: m + 5, passed))
+print(scaled)    # [50, 65, 95, 80, 60]</code></pre>
+
+    <hr>
+
+    <h2>8. A Common Trap: Mutable Default Arguments</h2>
+    <p>This is one of the most surprising bugs for beginners. Never use a mutable value, like a list, as a default argument:</p>
+    <pre><code>def add_item(item, lst=[]):
+    lst.append(item)
+    return lst
+
+print(add_item("a"))    # ['a']
+print(add_item("b"))    # ['a', 'b']  , NOT ['b'] as you might expect!</code></pre>
+    <p>The default list is created only <strong>once</strong>, when the function is defined, and every call that does not pass its own list keeps reusing the same one. The fix is to default to <code>None</code>, and create a fresh list inside the function:</p>
+    <pre><code>def add_item2(item, lst=None):
+    if lst is None:
+        lst = []
+    lst.append(item)
+    return lst
+
+print(add_item2("a"))    # ['a']
+print(add_item2("b"))    # ['b']</code></pre>
+
+    <hr>
+
+    <h2>9. Common Mistakes</h2>
+    <table>
+      <tr><th>Mistake</th><th>What happens</th><th>Fix</th></tr>
+      <tr><td>Forgetting <code>return</code>, using <code>print()</code> instead</td><td>Function gives back <code>None</code></td><td>Use <code>return</code> if you need to use the result later</td></tr>
+      <tr><td>A default parameter placed before a non-default one</td><td><code>SyntaxError</code></td><td>Non-default parameters must come first</td></tr>
+      <tr><td>Using a mutable default, like <code>lst=[]</code></td><td>The default is shared across calls</td><td>Default to <code>None</code>, create the value inside the function</td></tr>
+      <tr><td>Writing a multi-line lambda</td><td><code>SyntaxError</code></td><td>Use <code>def</code> for anything beyond one expression</td></tr>
+      <tr><td>Trying to change an outer variable without <code>global</code></td><td>A new local variable is created instead</td><td>Use <code>global</code>, or better, return the new value</td></tr>
+    </table>
+
+    <hr>
+
+    <h2>Quick Recap</h2>
+    <table>
+      <tr><th>You need</th><th>Use</th></tr>
+      <tr><td>To send a value back from a function</td><td><code>return</code></td></tr>
+      <tr><td>An optional parameter with a fallback value</td><td>a default value, <code>def f(x=10)</code></td></tr>
+      <tr><td>Any number of unnamed arguments</td><td><code>*args</code></td></tr>
+      <tr><td>Any number of named arguments</td><td><code>**kwargs</code></td></tr>
+      <tr><td>A quick, single-use function passed into another function</td><td><code>lambda</code></td></tr>
+      <tr><td>A named, reusable, or multi-line function</td><td><code>def</code></td></tr>
+    </table>
+    <p>Functions are what let you stop repeating yourself, and lambdas are simply a shorthand for the smallest, most disposable ones. Once you are comfortable with both, most of the pandas and scikit-learn code you will read later starts to make a lot more sense, since it leans on this exact same pattern everywhere.</p>
+
+    <hr>
+
+    <h2>Practice Questions</h2>
+    <ol>
+      <li>What is the difference between a parameter and an argument?</li>
+      <li>What does a function return if it has no <code>return</code> statement at all?</li>
+      <li>Rewrite <code>def cube(n): return n ** 3</code> as a <code>lambda</code>.</li>
+      <li>Why is <code>def f(items=[])</code> considered risky?</li>
+      <li>What does <code>*args</code> become inside the function body?</li>
+    </ol>
+
+    <h4>Answers</h4>
+    <ol>
+      <li>A parameter is the placeholder name in the function definition. An argument is the actual value you pass in when calling it.</li>
+      <li><code>None</code></li>
+      <li><code>cube = lambda n: n ** 3</code></li>
+      <li>The default list is created once and shared across every call that does not pass its own list, so changes from one call leak into the next.</li>
+      <li>A tuple containing every positional argument that was passed in.</li>
+    </ol>
+
+  </article>
+
+  <footer>
+    <div>© 2026 notebook. · articles added regularly</div>
+    <div>
+      <a href="../index.html">Home</a>
+    </div>
+  </footer>
+</div>
+
+</body>
+</html>
