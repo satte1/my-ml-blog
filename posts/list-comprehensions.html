@@ -1,0 +1,205 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>List Comprehensions in Python — notebook.</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,500;0,9..144,600;1,9..144,500&family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans:wght@400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../style.css">
+</head>
+<body>
+
+<div class="wrap">
+  <header>
+    <div class="nav-row">
+      <div class="brand">notebook.</div>
+      <nav>
+        <a href="../index.html#topics">Topics</a>
+        <a href="../index.html#about">About</a>
+        <a href="../index.html#courses">Courses</a>
+        <a href="../index.html#book" class="cta">Book a Call</a>
+      </nav>
+    </div>
+  </header>
+
+  <div class="article-header">
+    <a href="../index.html#topics" class="back-link">← Back to all articles</a>
+    <div class="article-meta">
+      <span>SEP 2026</span>
+      <span>By Mukesh</span>
+      <span class="tag">Python</span>
+    </div>
+    <h1>List Comprehensions in Python</h1>
+  </div>
+
+  <article class="article-body">
+
+    <h2>What is a List Comprehension?</h2>
+    <p>A <strong>list comprehension</strong> is a short way to create a list in Python, using a single line of code instead of a full loop. It takes an existing loop pattern and writes it in a compact, readable form.</p>
+    <blockquote>A list comprehension builds a new list by applying an expression to every item of another sequence, optionally filtering some items out.</blockquote>
+    <p>To understand it well, first look at the normal loop way, then see how the comprehension does the same thing.</p>
+
+    <h3>The Normal Loop Way</h3>
+    <p>Suppose we want a list of squares of numbers from 1 to 5.</p>
+    <pre><code>squares = []
+for n in range(1, 6):
+    squares.append(n * n)
+
+print(squares)</code></pre>
+    <p>Output:</p>
+    <pre><code>[1, 4, 9, 16, 25]</code></pre>
+
+    <h3>The Same Thing With a List Comprehension</h3>
+    <pre><code>squares = [n * n for n in range(1, 6)]
+print(squares)</code></pre>
+    <p>Output:</p>
+    <pre><code>[1, 4, 9, 16, 25]</code></pre>
+    <p>Both examples give the same result, but the comprehension does it in one line. It follows this pattern:</p>
+    <pre><code>new_list = [expression for item in sequence]</code></pre>
+    <ul>
+      <li><strong>expression</strong> is what you want to store for each item.</li>
+      <li><strong>item</strong> is the variable name for each element, one at a time.</li>
+      <li><strong>sequence</strong> is what you are looping over: a list, a string, a range, and so on.</li>
+    </ul>
+
+    <hr>
+
+    <h2>Adding a Condition</h2>
+    <p>List comprehensions can also filter items using an <code>if</code> at the end.</p>
+    <pre><code>new_list = [expression for item in sequence if condition]</code></pre>
+    <p>Example: keep only the even numbers from 1 to 10.</p>
+    <pre><code>numbers = range(1, 11)
+evens = [n for n in numbers if n % 2 == 0]
+print(evens)</code></pre>
+    <p>Output:</p>
+    <pre><code>[2, 4, 6, 8, 10]</code></pre>
+    <p>Here, the condition <code>n % 2 == 0</code> checks whether a number is even. Only the numbers that pass the condition are added to the new list.</p>
+
+    <h3>Normal Loop Version (for comparison)</h3>
+    <pre><code>numbers = range(1, 11)
+evens = []
+for n in numbers:
+    if n % 2 == 0:
+        evens.append(n)
+
+print(evens)</code></pre>
+    <p>The comprehension version does the same job in a single line and is easier to read once you are used to the pattern.</p>
+
+    <hr>
+
+    <h2>Using if...else Inside a Comprehension</h2>
+    <p>You can also transform every item differently based on a condition, using <code>if...else</code>. The position of <code>if...else</code> is different here: it comes right after the expression, not at the end.</p>
+    <pre><code>new_list = [value_if_true if condition else value_if_false for item in sequence]</code></pre>
+    <p>Example: label each number as "Even" or "Odd".</p>
+    <pre><code>numbers = [1, 2, 3, 4, 5]
+labels = ["Even" if n % 2 == 0 else "Odd" for n in numbers]
+print(labels)</code></pre>
+    <p>Output:</p>
+    <pre><code>['Odd', 'Even', 'Odd', 'Even', 'Odd']</code></pre>
+
+    <table>
+      <tr><th>Comprehension type</th><th>Syntax</th><th>Purpose</th></tr>
+      <tr><td>Basic</td><td><code>[x for x in seq]</code></td><td>Transform every item</td></tr>
+      <tr><td>With filter</td><td><code>[x for x in seq if cond]</code></td><td>Keep only some items</td></tr>
+      <tr><td>With if...else</td><td><code>[a if cond else b for x in seq]</code></td><td>Transform every item differently</td></tr>
+    </table>
+
+    <hr>
+
+    <h2>Working With Strings</h2>
+    <p>A list comprehension does not need to loop over numbers only. It can loop over the characters of a string, since a string is also a sequence in Python.</p>
+    <pre><code>word = "python"
+letters = [ch.upper() for ch in word]
+print(letters)</code></pre>
+    <p>Output:</p>
+    <pre><code>['P', 'Y', 'T', 'H', 'O', 'N']</code></pre>
+
+    <h3>Working With a List of Words</h3>
+    <pre><code>words = ["data", "science", "ai"]
+lengths = [len(w) for w in words]
+print(lengths)</code></pre>
+    <p>Output:</p>
+    <pre><code>[4, 7, 2]</code></pre>
+
+    <hr>
+
+    <h2>Nested Loops in a Comprehension</h2>
+    <p>You can use more than one <code>for</code> inside a comprehension. This is useful when you need to combine items from two sequences.</p>
+    <pre><code>pairs = [(x, y) for x in [1, 2] for y in ["a", "b"]]
+print(pairs)</code></pre>
+    <p>Output:</p>
+    <pre><code>[(1, 'a'), (1, 'b'), (2, 'a'), (2, 'b')]</code></pre>
+    <p>This is the same as writing two loops, one inside the other:</p>
+    <pre><code>pairs = []
+for x in [1, 2]:
+    for y in ["a", "b"]:
+        pairs.append((x, y))</code></pre>
+    <p><strong>Tip:</strong> Nested comprehensions are powerful, but they can also become hard to read. If a comprehension needs two or more <code>for</code> parts and a condition, it is often clearer to write it as a normal loop instead.</p>
+
+    <hr>
+
+    <h2>Dictionary and Set Comprehensions (A Quick Look)</h2>
+    <p>The same idea also works for dictionaries and sets, using <code>{}</code> instead of <code>[]</code>.</p>
+    <pre><code># Dictionary comprehension
+squares_dict = {n: n * n for n in range(1, 5)}
+print(squares_dict)
+
+# Set comprehension
+unique_lengths = {len(w) for w in ["data", "ai", "code", "ai"]}
+print(unique_lengths)</code></pre>
+    <p>Output:</p>
+    <pre><code>{1: 1, 2: 4, 3: 9, 4: 16}
+{2, 4}</code></pre>
+    <p>We will cover dictionaries and sets in more detail in their own article. For now, just remember that comprehensions are not only for lists.</p>
+
+    <hr>
+
+    <h2>When Should You Use a List Comprehension?</h2>
+    <ul>
+      <li>Use it when the logic is short and easy to read in one line.</li>
+      <li>Avoid it when the logic has many steps or many conditions, since a normal loop will be clearer for you and for anyone reading your code later.</li>
+      <li>List comprehensions are usually a little faster than a normal loop with <code>append()</code>, but readability matters more than a small speed gain.</li>
+    </ul>
+
+    <hr>
+
+    <h2>Quick Recap</h2>
+    <table>
+      <tr><th>Pattern</th><th>Example</th></tr>
+      <tr><td>Basic</td><td><code>[n * n for n in range(5)]</code></td></tr>
+      <tr><td>With filter</td><td><code>[n for n in range(10) if n % 2 == 0]</code></td></tr>
+      <tr><td>With if...else</td><td><code>["Even" if n % 2 == 0 else "Odd" for n in nums]</code></td></tr>
+      <tr><td>Nested</td><td><code>[(x, y) for x in a for y in b]</code></td></tr>
+      <tr><td>Dictionary</td><td><code>{k: v for k, v in pairs}</code></td></tr>
+      <tr><td>Set</td><td><code>{x for x in seq}</code></td></tr>
+    </table>
+    <ul>
+      <li>A list comprehension is a short way to build a list from a loop.</li>
+      <li>It can include a filter with <code>if</code>, or a transform with <code>if...else</code>.</li>
+      <li>It can loop over numbers, strings, or any other sequence.</li>
+      <li>Use it for simple logic, and a normal loop for complex logic.</li>
+    </ul>
+
+    <hr>
+
+    <h2>Practice Questions</h2>
+    <ol>
+      <li>Write a list comprehension that creates a list of cubes of numbers from 1 to 5.</li>
+      <li>Write a list comprehension that picks out only the vowels from the word "programming".</li>
+      <li>Write a list comprehension that converts a list of temperatures in Celsius to Fahrenheit.</li>
+      <li>Write a dictionary comprehension that maps each word in a list to its length.</li>
+    </ol>
+
+  </article>
+
+  <footer>
+    <div>© 2026 notebook. · articles added regularly</div>
+    <div>
+      <a href="../index.html">Home</a>
+    </div>
+  </footer>
+</div>
+
+</body>
+</html>
