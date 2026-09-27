@@ -1,0 +1,331 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>File Handling: notebook.</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,500;0,9..144,600;1,9..144,500&family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans:wght@400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../style.css">
+</head>
+<body>
+
+<div class="wrap">
+  <header>
+    <div class="nav-row">
+      <div class="brand">notebook.</div>
+      <nav>
+        <a href="../index.html#topics">Topics</a>
+        <a href="../index.html#about">About</a>
+        <a href="../index.html#courses">Courses</a>
+        <a href="../index.html#book" class="cta">Book a Call</a>
+      </nav>
+    </div>
+  </header>
+
+  <div class="article-header">
+    <a href="../index.html#topics" class="back-link">← Back to all articles</a>
+    <div class="article-meta">
+      <span>SEP 2026</span>
+      <span>By Mukesh</span>
+      <span class="tag">Python</span>
+    </div>
+    <h1>File Handling: Reading and Writing CSV and Text Files</h1>
+  </div>
+
+  <article class="article-body">
+
+    <h2>Why This Topic Matters</h2>
+    <p>Until now, every value we used disappeared the moment our program stopped running. Real work needs data that <strong>survives</strong>, a list of students saved to disk, a CSV exported from a website, a log file your program writes to over time. That is what <strong>file handling</strong> is for.</p>
+    <p>By the end of this post you will know:</p>
+    <ol>
+      <li>How to open, read and write plain text files safely</li>
+      <li>The different modes files can be opened in</li>
+      <li>How to read and write CSV files, both by row and by column name</li>
+      <li>How to check if a file exists, and handle a missing one without crashing</li>
+      <li>How pandas makes CSV work even shorter, once you understand what it is doing underneath</li>
+    </ol>
+
+    <hr>
+
+    <h2>1. Opening a File</h2>
+
+    <h3>1.1 The Safe Way: with open()</h3>
+    <blockquote>The with statement opens a file, lets you use it, and closes it automatically, even if an error happens.</blockquote>
+    <pre><code>with open("demo.txt", "w") as f:
+    f.write("Hello, Python!\n")
+    f.write("This is line two.\n")</code></pre>
+    <p><code>open()</code> takes two main things: the <strong>filename</strong>, and the <strong>mode</strong>, which tells Python what you plan to do with the file. <code>"w"</code> means write. Here <code>f</code> is a file object, your handle to the open file, and everything inside the <code>with</code> block can use it.</p>
+    <p>You could open a file without <code>with</code>, using <code>f = open(...)</code> and <code>f.close()</code>, but if an error happens before <code>close()</code> runs, the file is left open. <code>with</code> guarantees it gets closed, so it is always the better choice.</p>
+
+    <h3>1.2 File Modes</h3>
+    <table>
+      <tr><th>Mode</th><th>Meaning</th></tr>
+      <tr><td><code>"r"</code></td><td>Read (default). Fails if the file does not exist.</td></tr>
+      <tr><td><code>"w"</code></td><td>Write. Creates the file if missing, erases existing content.</td></tr>
+      <tr><td><code>"a"</code></td><td>Append. Creates the file if missing, adds to the end without erasing.</td></tr>
+      <tr><td><code>"x"</code></td><td>Create. Fails if the file already exists.</td></tr>
+    </table>
+    <p>The mode you pick decides whether your old data survives. <code>"w"</code> wipes the file clean before writing, this is the mistake that costs beginners their data most often.</p>
+
+    <hr>
+
+    <h2>2. Reading a Text File</h2>
+
+    <h3>2.1 Reading the Whole File at Once</h3>
+    <pre><code>with open("demo.txt", "r") as f:
+    content = f.read()
+
+print(content)
+# Hello, Python!
+# This is line two.</code></pre>
+    <p><code>.read()</code> gives you the entire file as one single string.</p>
+
+    <h3>2.2 Reading Line by Line</h3>
+    <p>For a large file, reading everything at once can use a lot of memory. Loop over the file object directly instead, it reads one line at a time:</p>
+    <pre><code>with open("demo.txt", "r") as f:
+    for line in f:
+        print(line.strip())
+
+# Hello, Python!
+# This is line two.</code></pre>
+    <p><code>.strip()</code> removes the newline character (<code>\n</code>) at the end of each line, along with any extra spaces. Without it, you would see an extra blank line after every print.</p>
+
+    <h3>2.3 Reading All Lines into a List</h3>
+    <pre><code>with open("demo.txt", "r") as f:
+    lines = f.readlines()
+
+print(lines)
+# ['Hello, Python!\n', 'This is line two.\n']</code></pre>
+    <p><code>.readlines()</code> gives you a list of lines, each one still carrying its trailing <code>\n</code>.</p>
+
+    <hr>
+
+    <h2>3. Writing and Appending</h2>
+
+    <h3>3.1 Writing (and Overwriting)</h3>
+    <pre><code>with open("demo.txt", "w") as f:
+    f.write("New content only.\n")</code></pre>
+    <p>Opening in <code>"w"</code> mode erases whatever was in the file before, even if you only write one line. If the file did not exist yet, it gets created.</p>
+
+    <h3>3.2 Appending Without Losing Old Data</h3>
+    <pre><code>with open("demo.txt", "a") as f:
+    f.write("Appended line.\n")
+
+with open("demo.txt") as f:
+    print(f.read())
+
+# Hello, Python!
+# This is line two.
+# Appended line.</code></pre>
+    <p>Use <code>"a"</code> whenever you want to keep adding to a file over time, a log file is the classic example.</p>
+
+    <hr>
+
+    <h2>4. Handling a Missing File Safely</h2>
+    <p>Trying to read a file that does not exist raises an error:</p>
+    <pre><code>with open("missing.txt") as f:
+    pass</code></pre>
+    <pre><code>FileNotFoundError: [Errno 2] No such file or directory: 'missing.txt'</code></pre>
+    <p>Wrap it in <code>try / except</code> so your program can respond instead of crashing:</p>
+    <pre><code>try:
+    with open("missing.txt") as f:
+        data = f.read()
+except FileNotFoundError:
+    print("That file does not exist yet.")</code></pre>
+    <p>You can also check first, using the <code>os</code> module:</p>
+    <pre><code>import os
+
+print(os.path.exists("demo.txt"))     # True
+print(os.path.exists("nope.txt"))     # False</code></pre>
+
+    <hr>
+
+    <h2>5. CSV Files</h2>
+
+    <h3>5.1 What is a CSV File?</h3>
+    <blockquote>CSV stands for Comma-Separated Values, a plain text file where each line is a row, and commas separate the columns.</blockquote>
+    <p>A CSV file is just a text file with a specific pattern, so you could technically read it with <code>open()</code> and split each line on commas yourself. Python's built-in <code>csv</code> module does this properly for you, and also handles tricky cases like commas inside quoted text.</p>
+
+    <h3>5.2 Writing a CSV File</h3>
+    <pre><code>import csv
+
+rows = [
+    ["name", "age", "city"],
+    ["Satyam", 25, "Jaipur"],
+    ["Anita", 30, "Delhi"]
+]
+
+with open("students.csv", "w", newline="") as f:
+    writer = csv.writer(f)
+    writer.writerows(rows)</code></pre>
+    <p>The resulting file looks like this:</p>
+    <pre><code>name,age,city
+Satyam,25,Jaipur
+Anita,30,Delhi</code></pre>
+    <p>Always pass <code>newline=""</code> when opening a file for CSV writing. Without it, Windows can add extra blank lines between rows.</p>
+
+    <h3>5.3 Reading a CSV File, Row by Row</h3>
+    <pre><code>with open("students.csv", newline="") as f:
+    reader = csv.reader(f)
+    for row in reader:
+        print(row)
+
+# ['name', 'age', 'city']
+# ['Satyam', '25', 'Jaipur']
+# ['Anita', '30', 'Delhi']</code></pre>
+    <p>Notice that <code>"25"</code> comes back as <strong>text</strong>, not a number. Every value read from a CSV file is a string, you will need <code>int()</code> or <code>float()</code> if you plan to do maths with it, exactly like we covered in the type conversion post.</p>
+
+    <h3>5.4 Reading a CSV File by Column Name</h3>
+    <p>Working with numbered positions like <code>row[0]</code> and <code>row[1]</code> gets confusing fast. <code>DictReader</code> lets you use column names instead:</p>
+    <pre><code>with open("students.csv", newline="") as f:
+    reader = csv.DictReader(f)
+    for row in reader:
+        print(row)
+        print(row["name"], row["age"])
+
+# {'name': 'Satyam', 'age': '25', 'city': 'Jaipur'}
+# Satyam 25
+# {'name': 'Anita', 'age': '30', 'city': 'Delhi'}
+# Anita 30</code></pre>
+    <p><code>DictReader</code> automatically uses the first row of the CSV as the keys, so each row comes back as a dictionary.</p>
+
+    <h3>5.5 Writing a CSV File from a List of Dictionaries</h3>
+    <pre><code>students = [
+    {"name": "Satyam", "age": 25, "city": "Jaipur"},
+    {"name": "Anita", "age": 30, "city": "Delhi"}
+]
+
+with open("students2.csv", "w", newline="") as f:
+    writer = csv.DictWriter(f, fieldnames=["name", "age", "city"])
+    writer.writeheader()
+    writer.writerows(students)</code></pre>
+    <p><code>fieldnames</code> tells the writer the column order, and <code>.writeheader()</code> writes that first row for you. This pairs naturally with the list-of-dicts shape from the collections post.</p>
+
+    <hr>
+
+    <h2>6. The Shortcut: CSV Files with pandas</h2>
+    <p>Once your CSV files get bigger, or you want to analyse the data instead of just reading it, pandas does most of this in one line.</p>
+    <pre><code>import pandas as pd
+
+df = pd.read_csv("students.csv")
+print(df)
+#      name  age    city
+# 0  Satyam   25  Jaipur
+# 1   Anita   30   Delhi
+
+print(df["age"].mean())    # 27.5</code></pre>
+    <p>Notice that pandas read the <code>age</code> column as actual numbers, not text, and let us take an average straight away. Saving back to CSV is just as short:</p>
+    <pre><code>df.to_csv("students_out.csv", index=False)</code></pre>
+    <p><code>index=False</code> stops pandas from adding its own row numbers as an extra column in the file. We are only introducing pandas briefly here, it deserves, and will get, a post of its own.</p>
+
+    <hr>
+
+    <h2>7. csv module vs pandas: Which One to Use</h2>
+    <table>
+      <tr><th>Situation</th><th>Use</th></tr>
+      <tr><td>A small file, or a one-time script with no analysis needed</td><td>the built-in <code>csv</code> module</td></tr>
+      <tr><td>You want full control over reading each row yourself</td><td>the built-in <code>csv</code> module</td></tr>
+      <tr><td>You need to filter, group, average, or otherwise analyse the data</td><td><code>pandas</code></td></tr>
+      <tr><td>The file is large, and you want it loaded quickly into a table-like structure</td><td><code>pandas</code></td></tr>
+    </table>
+
+    <hr>
+
+    <h2>8. Practical Examples</h2>
+
+    <h3>Example 1: Saving User Input to a File</h3>
+    <pre><code>name = input("Enter your name: ")
+feedback = input("Enter your feedback: ")
+
+with open("feedback.txt", "a") as f:
+    f.write(f"{name}: {feedback}\n")
+
+print("Saved, thank you!")</code></pre>
+    <p><code>"a"</code> mode means every new run of the program adds another line, instead of erasing what earlier users wrote.</p>
+
+    <h3>Example 2: Finding the Average Marks from a CSV</h3>
+    <pre><code>import csv
+
+total = 0
+count = 0
+
+with open("students.csv", newline="") as f:
+    reader = csv.DictReader(f)
+    for row in reader:
+        total += int(row["age"])
+        count += 1
+
+print(total / count)    # 27.5</code></pre>
+    <p>Every value from <code>DictReader</code> is text, so <code>int(row["age"])</code> is doing the same job we practised in the type conversion post, converting text into a number before doing maths on it.</p>
+
+    <h3>Example 3: Checking Before You Read</h3>
+    <pre><code>import os
+
+filename = "students.csv"
+
+if os.path.exists(filename):
+    with open(filename, newline="") as f:
+        print(f.read())
+else:
+    print(f"{filename} not found, nothing to show.")</code></pre>
+
+    <hr>
+
+    <h2>9. Common Mistakes</h2>
+    <table>
+      <tr><th>Mistake</th><th>What happens</th><th>Fix</th></tr>
+      <tr><td>Opening in <code>"w"</code> mode when you meant to keep old data</td><td>The file is silently erased first</td><td>Use <code>"a"</code> to append, <code>"w"</code> only when you want a clean file</td></tr>
+      <tr><td>Forgetting <code>newline=""</code> when writing CSV on Windows</td><td>Extra blank lines appear between rows</td><td>Always pass <code>newline=""</code> to <code>open()</code> for CSV work</td></tr>
+      <tr><td>Doing maths directly on a value from <code>csv.reader</code></td><td><code>TypeError</code>, since the value is text</td><td>Convert with <code>int()</code> or <code>float()</code> first</td></tr>
+      <tr><td>Reading a file without checking it exists</td><td><code>FileNotFoundError</code></td><td>Check with <code>os.path.exists()</code>, or wrap in <code>try / except</code></td></tr>
+      <tr><td>Forgetting to close a file opened without <code>with</code></td><td>Data may not be fully saved to disk</td><td>Always use <code>with open(...) as f:</code></td></tr>
+    </table>
+
+    <hr>
+
+    <h2>Quick Recap</h2>
+    <table>
+      <tr><th>You need</th><th>Use</th></tr>
+      <tr><td>To open a file safely, and have it close automatically</td><td><code>with open(filename, mode) as f:</code></td></tr>
+      <tr><td>To read an entire text file</td><td><code>f.read()</code></td></tr>
+      <tr><td>To read a large file efficiently, line by line</td><td><code>for line in f:</code></td></tr>
+      <tr><td>To add new data without erasing old data</td><td><code>"a"</code> mode</td></tr>
+      <tr><td>To read a CSV row by row, as lists</td><td><code>csv.reader</code></td></tr>
+      <tr><td>To read a CSV row by row, using column names</td><td><code>csv.DictReader</code></td></tr>
+      <tr><td>To analyse a CSV quickly, as a table</td><td><code>pandas.read_csv()</code></td></tr>
+    </table>
+    <p>File handling is the bridge between your Python code and the outside world, saved results, exported data, logs, and every dataset you will load in machine learning starts as a file on disk somewhere. Getting comfortable with modes, safe reading, and the difference between <code>csv</code> and pandas makes everything from here easier.</p>
+
+    <hr>
+
+    <h2>Practice Questions</h2>
+    <ol>
+      <li>What is the difference between mode <code>"w"</code> and mode <code>"a"</code>?</li>
+      <li>Why should you use <code>with open(...)</code> instead of <code>open()</code> and <code>close()</code> separately?</li>
+      <li>What type does every value from <code>csv.reader</code> come back as, even if it looks like a number?</li>
+      <li>What does <code>csv.DictReader</code> use as the keys for each row?</li>
+      <li>What does passing <code>index=False</code> to <code>df.to_csv()</code> do?</li>
+    </ol>
+
+    <h4>Answers</h4>
+    <ol>
+      <li><code>"w"</code> erases the file's existing content before writing. <code>"a"</code> adds new content to the end, keeping what was already there.</li>
+      <li><code>with</code> closes the file automatically, even if an error happens partway through, so you never accidentally leave a file open or unsaved.</li>
+      <li><code>str</code>, text. It must be converted with <code>int()</code> or <code>float()</code> before you can do maths on it.</li>
+      <li>The first row of the CSV file, treated as column headers.</li>
+      <li>It stops pandas from writing its own row numbers as an extra column in the saved file.</li>
+    </ol>
+
+  </article>
+
+  <footer>
+    <div>© 2026 notebook. · articles added regularly</div>
+    <div>
+      <a href="../index.html">Home</a>
+    </div>
+  </footer>
+</div>
+
+</body>
+</html>
