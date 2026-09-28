@@ -1,0 +1,341 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Error Handling: notebook.</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,500;0,9..144,600;1,9..144,500&family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans:wght@400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../style.css">
+</head>
+<body>
+
+<div class="wrap">
+  <header>
+    <div class="nav-row">
+      <div class="brand">notebook.</div>
+      <nav>
+        <a href="../index.html#topics">Topics</a>
+        <a href="../index.html#about">About</a>
+        <a href="../index.html#courses">Courses</a>
+        <a href="../index.html#book" class="cta">Book a Call</a>
+      </nav>
+    </div>
+  </header>
+
+  <div class="article-header">
+    <a href="../index.html#topics" class="back-link">← Back to all articles</a>
+    <div class="article-meta">
+      <span>SEP 2026</span>
+      <span>By Mukesh</span>
+      <span class="tag">Python</span>
+    </div>
+    <h1>Error Handling with try and except</h1>
+  </div>
+
+  <article class="article-body">
+
+    <h2>Why This Topic Matters</h2>
+    <p>Every program meets problems it did not plan for: a user types text where a number was expected, a file is missing, a value is zero when you divide by it. Without any protection, Python stops the whole program and prints a long error message. That is fine while you are learning, but in a real program it is a bad experience.</p>
+    <p><strong>Error handling</strong> lets your program notice a problem, deal with it calmly, and keep going. By the end of this post you will know:</p>
+    <ol>
+      <li>What an error (exception) is, and how to read one</li>
+      <li>How to catch errors with <code>try</code> and <code>except</code></li>
+      <li>How to handle different errors differently</li>
+      <li>What <code>else</code> and <code>finally</code> are for</li>
+      <li>How to raise your own errors, and build your own error types</li>
+    </ol>
+
+    <hr>
+
+    <h2>1. What is an Error?</h2>
+
+    <h3>1.1 Errors Are Called Exceptions</h3>
+    <blockquote>An exception is what Python creates when something goes wrong while your program is running.</blockquote>
+    <p>If nothing catches it, the program stops immediately and shows the error. Here are the ones you will meet most often:</p>
+    <pre><code>[1, 2, 3][5]         # IndexError: list index out of range
+{"a": 1}["b"]        # KeyError: 'b'
+"a" + 1              # TypeError: can only concatenate str (not "int") to str
+undefined_var        # NameError: name 'undefined_var' is not defined
+int("x")             # ValueError: invalid literal for int() with base 10: 'x'
+1 / 0                # ZeroDivisionError: division by zero
+open("nofile.txt")   # FileNotFoundError: No such file or directory: 'nofile.txt'</code></pre>
+    <p>Each error has a <strong>type</strong> (the name before the colon) and a <strong>message</strong> (the text after it). The type tells you what kind of problem it is, and the message gives the details. Learning to read these two parts is half the job of fixing bugs.</p>
+
+    <h3>1.2 Syntax Errors vs Exceptions</h3>
+    <p>There are two broad kinds of problems:</p>
+    <table>
+      <tr><th>Kind</th><th>When it happens</th><th>Can try/except catch it?</th></tr>
+      <tr><td>Syntax error</td><td>Before the program runs, Python cannot even read your code (for example, a missing colon)</td><td>No, you must fix the code</td></tr>
+      <tr><td>Exception</td><td>While the program is running, something goes wrong</td><td>Yes</td></tr>
+    </table>
+    <p>This post is about exceptions, the ones that happen while the program is running.</p>
+
+    <hr>
+
+    <h2>2. try and except</h2>
+
+    <h3>2.1 The Basic Pattern</h3>
+    <pre><code>try:
+    print(10 / 0)
+except ZeroDivisionError:
+    print("Cannot divide by zero")
+
+# Cannot divide by zero</code></pre>
+    <p><strong>How it works:</strong> Python first <em>tries</em> to run the code inside <code>try</code>. If an error of the named type happens, Python jumps straight to the <code>except</code> block and runs that instead. The program does not crash, and the code after the block carries on normally.</p>
+    <p>If no error happens, the <code>except</code> block is simply skipped.</p>
+
+    <h3>2.2 Getting the Error Message</h3>
+    <p>Add <code>as e</code> to capture the error itself, so you can show or log the message:</p>
+    <pre><code>try:
+    n = int("abc")
+except ValueError as e:
+    print("Error:", e)
+
+# Error: invalid literal for int() with base 10: 'abc'</code></pre>
+
+    <h3>2.3 Handling Different Errors Differently</h3>
+    <p>You can stack several <code>except</code> blocks, one for each kind of error you expect:</p>
+    <pre><code>def safe(value):
+    try:
+        return 10 / int(value)
+    except ValueError:
+        return "not a number"
+    except ZeroDivisionError:
+        return "zero not allowed"
+
+print(safe("2"))      # 5.0
+print(safe("abc"))    # not a number
+print(safe("0"))      # zero not allowed</code></pre>
+    <p>Python checks the <code>except</code> blocks from top to bottom and runs the <strong>first</strong> one that matches.</p>
+
+    <h3>2.4 Catching Several Errors in One Block</h3>
+    <p>If two errors should be handled the same way, put them in a tuple:</p>
+    <pre><code>try:
+    x = int("abc")
+except (ValueError, TypeError):
+    print("bad input")
+
+# bad input</code></pre>
+
+    <h3>2.5 Catching Any Error with Exception</h3>
+    <p><code>Exception</code> is the parent of almost every error, so it catches them all:</p>
+    <pre><code>try:
+    1 / 0
+except Exception as e:
+    print(type(e).__name__)
+
+# ZeroDivisionError</code></pre>
+    <p>This is handy as a last safety net, but be careful. If you catch <strong>everything</strong>, you may hide real bugs, including typing mistakes in your own code. A good habit is to catch the <strong>specific</strong> errors you expect, and only use <code>Exception</code> at the very end, or where you log the problem.</p>
+    <pre><code>try:
+    int("x")
+except ValueError:
+    print("specific")
+except Exception:
+    print("general")
+
+# specific</code></pre>
+    <p>The specific one goes first. If <code>except Exception</code> came first, it would grab every error, and the specific block below it would never run.</p>
+
+    <hr>
+
+    <h2>3. else and finally</h2>
+
+    <h3>3.1 else, Runs Only If No Error Happened</h3>
+    <pre><code>try:
+    n = int("5")
+except ValueError:
+    print("bad")
+else:
+    print("worked:", n)
+
+# worked: 5</code></pre>
+    <p>The <code>else</code> block runs only when the <code>try</code> block finished <strong>without</strong> any error. It keeps your "success" code separate from the code you are guarding.</p>
+
+    <h3>3.2 finally, Always Runs</h3>
+    <pre><code>try:
+    n = int("x")
+except ValueError:
+    print("bad")
+else:
+    print("worked")
+finally:
+    print("always runs")
+
+# bad
+# always runs</code></pre>
+    <p>The <code>finally</code> block runs <strong>no matter what</strong>: if there was an error, if there was not, or even if the error was not caught. It is used for cleanup jobs like closing a file or a connection.</p>
+
+    <h3>3.3 The Full Picture</h3>
+    <table>
+      <tr><th>Block</th><th>When it runs</th></tr>
+      <tr><td><code>try</code></td><td>Always starts here</td></tr>
+      <tr><td><code>except</code></td><td>Only if a matching error happened in <code>try</code></td></tr>
+      <tr><td><code>else</code></td><td>Only if <code>try</code> finished with no error</td></tr>
+      <tr><td><code>finally</code></td><td>Always, at the very end</td></tr>
+    </table>
+
+    <hr>
+
+    <h2>4. Raising Your Own Errors</h2>
+
+    <h3>4.1 The raise Keyword</h3>
+    <p>Sometimes Python will not see anything wrong, but <strong>you</strong> know the value makes no sense. An age of <code>-5</code> is a valid number, but not a valid age. Use <code>raise</code> to create an error yourself:</p>
+    <pre><code>def set_age(age):
+    if age < 0:
+        raise ValueError("Age cannot be negative")
+    return age
+
+try:
+    set_age(-5)
+except ValueError as e:
+    print("Caught:", e)
+
+# Caught: Age cannot be negative</code></pre>
+    <p>This is how well-written functions protect themselves: check the input, and raise a clear error the moment something is wrong, rather than letting bad data travel deeper into the program.</p>
+
+    <h3>4.2 Custom Error Types</h3>
+    <p>For bigger programs, you can create your own error type, by making a class that inherits from <code>Exception</code>:</p>
+    <pre><code>class InsufficientFunds(Exception):
+    pass
+
+def withdraw(balance, amount):
+    if amount > balance:
+        raise InsufficientFunds(f"Balance {balance}, tried {amount}")
+    return balance - amount
+
+try:
+    withdraw(100, 500)
+except InsufficientFunds as e:
+    print("Failed:", e)
+
+# Failed: Balance 100, tried 500</code></pre>
+    <p>A custom error has a clear name that explains the problem, and lets other code catch <strong>exactly</strong> this situation without confusing it with a different <code>ValueError</code>.</p>
+
+    <hr>
+
+    <h2>5. Practical Examples</h2>
+
+    <h3>Example 1: A Safe Number Converter</h3>
+    <pre><code>def to_int(value, default=0):
+    try:
+        return int(value)
+    except (ValueError, TypeError):
+        return default
+
+print(to_int("25"))     # 25
+print(to_int("abc"))    # 0
+print(to_int(None))     # 0</code></pre>
+    <p>We caught <code>TypeError</code> as well as <code>ValueError</code>, because <code>int(None)</code> raises a <code>TypeError</code>, not a <code>ValueError</code>.</p>
+
+    <h3>Example 2: Keep Asking Until the Input Is Valid</h3>
+    <pre><code>while True:
+    try:
+        age = int(input("Enter your age: "))
+        if age < 0:
+            raise ValueError("negative")
+        break
+    except ValueError:
+        print("Invalid, try again")
+
+print("Age:", age)</code></pre>
+    <p>If the user types <code>abc</code>, <code>int()</code> raises a <code>ValueError</code>. If they type <code>-3</code>, our own <code>raise</code> creates one. Both are caught by the same <code>except</code>, and the loop asks again until the input is good. When it is, <code>break</code> leaves the loop.</p>
+
+    <h3>Example 3: Skipping Bad Rows in a Loop</h3>
+    <pre><code>data = ["10", "x", "30", "", "50"]
+good = []
+
+for item in data:
+    try:
+        good.append(int(item))
+    except ValueError:
+        print("Skipping", repr(item))
+
+print(good, sum(good))
+
+# Skipping 'x'
+# Skipping ''
+# [10, 30, 50] 90</code></pre>
+    <p>One bad value does not stop the whole job. This pattern is very common when cleaning messy data, which you will do a lot in machine learning.</p>
+
+    <h3>Example 4: A Missing File</h3>
+    <pre><code>try:
+    with open("missing.txt") as f:
+        data = f.read()
+except FileNotFoundError:
+    print("File not found")
+
+# File not found</code></pre>
+    <p>This is the same idea we used in the file handling post.</p>
+
+    <hr>
+
+    <h2>6. Good Habits</h2>
+    <ul>
+      <li><strong>Catch specific errors.</strong> <code>except ValueError</code> is better than <code>except Exception</code>, because it only handles what you expected.</li>
+      <li><strong>Keep the try block small.</strong> Put only the risky line inside <code>try</code>, not your whole program. Then you know exactly which line failed.</li>
+      <li><strong>Never write an empty except that hides the problem.</strong> An <code>except</code> block that does nothing makes bugs silent and very hard to find. At the least, print or log the error.</li>
+      <li><strong>Do not use try/except to replace simple checks.</strong> If an <code>if</code> statement can check the problem clearly (like <code>if b != 0</code>), that is often easier to read.</li>
+      <li><strong>Give clear messages.</strong> When you <code>raise</code> an error, say exactly what went wrong and what value caused it.</li>
+    </ul>
+
+    <hr>
+
+    <h2>7. Common Mistakes</h2>
+    <table>
+      <tr><th>Mistake</th><th>What happens</th><th>Fix</th></tr>
+      <tr><td>Putting <code>except Exception</code> before a specific <code>except</code></td><td>The specific block never runs</td><td>Order them from most specific to most general</td></tr>
+      <tr><td>Catching every error and doing nothing</td><td>Bugs are hidden and hard to find</td><td>Catch specific errors, and print or log the message</td></tr>
+      <tr><td>Wrapping the whole program in one big <code>try</code></td><td>You cannot tell which line failed</td><td>Wrap only the risky lines</td></tr>
+      <tr><td>Forgetting that <code>int(None)</code> gives <code>TypeError</code>, not <code>ValueError</code></td><td>The error slips past your <code>except ValueError</code></td><td>Catch both: <code>except (ValueError, TypeError)</code></td></tr>
+      <tr><td>Expecting <code>else</code> to run after an error</td><td>It is skipped</td><td><code>else</code> runs only when there was no error</td></tr>
+    </table>
+
+    <hr>
+
+    <h2>Quick Recap</h2>
+    <table>
+      <tr><th>You need</th><th>Use</th></tr>
+      <tr><td>To guard a risky piece of code</td><td><code>try</code></td></tr>
+      <tr><td>To handle a specific error</td><td><code>except ValueError:</code></td></tr>
+      <tr><td>To see the error message</td><td><code>except ValueError as e:</code></td></tr>
+      <tr><td>To handle several errors the same way</td><td><code>except (ValueError, TypeError):</code></td></tr>
+      <tr><td>Code that runs only when nothing went wrong</td><td><code>else</code></td></tr>
+      <tr><td>Cleanup code that must always run</td><td><code>finally</code></td></tr>
+      <tr><td>To signal a problem yourself</td><td><code>raise ValueError("message")</code></td></tr>
+      <tr><td>A named error for your own program</td><td><code>class MyError(Exception): pass</code></td></tr>
+    </table>
+    <p>Errors are not the enemy. They are Python telling you exactly what went wrong. With <code>try</code> and <code>except</code>, you decide what happens next, so a small problem in one place does not bring down the whole program.</p>
+
+    <hr>
+
+    <h2>Practice Questions</h2>
+    <ol>
+      <li>What error does <code>int("hello")</code> raise?</li>
+      <li>In a <code>try / except / else / finally</code> block, which part always runs?</li>
+      <li>Why is it usually better to write <code>except ValueError</code> than <code>except Exception</code>?</li>
+      <li>What does the keyword <code>raise</code> do?</li>
+      <li>If the <code>try</code> block finishes with no error, does the <code>except</code> block run?</li>
+    </ol>
+
+    <h4>Answers</h4>
+    <ol>
+      <li>A <code>ValueError</code>, because the text does not look like a number.</li>
+      <li>The <code>finally</code> block, whether or not an error happened.</li>
+      <li>It handles only the problem you expected, so real bugs elsewhere are not hidden.</li>
+      <li>It creates an error on purpose, so you can stop the program (or jump to an <code>except</code> block) when a value makes no sense.</li>
+      <li>No. The <code>except</code> block runs only when a matching error happens. If there is an <code>else</code> block, that one runs instead.</li>
+    </ol>
+
+  </article>
+
+  <footer>
+    <div>© 2026 notebook. · articles added regularly</div>
+    <div>
+      <a href="../index.html">Home</a>
+    </div>
+  </footer>
+</div>
+
+</body>
+</html>
