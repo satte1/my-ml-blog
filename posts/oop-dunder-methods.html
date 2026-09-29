@@ -1,0 +1,215 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Special (Dunder) Methods: notebook.</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,500;0,9..144,600;1,9..144,500&family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans:wght@400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../style.css">
+</head>
+<body>
+
+<div class="wrap">
+  <header>
+    <div class="nav-row">
+      <div class="brand">notebook.</div>
+      <nav>
+        <a href="../index.html#topics">Topics</a>
+        <a href="../index.html#about">About</a>
+        <a href="../index.html#courses">Courses</a>
+        <a href="../index.html#book" class="cta">Book a Call</a>
+      </nav>
+    </div>
+  </header>
+
+  <div class="article-header">
+    <a href="../index.html#topics" class="back-link">← Back to all articles</a>
+    <div class="article-meta">
+      <span>SEP 2026</span>
+      <span>By Mukesh</span>
+      <span class="tag">Python</span>
+    </div>
+    <h1>Special (Dunder) Methods</h1>
+  </div>
+
+  <article class="article-body">
+
+    <h2>Why This Topic Matters</h2>
+    <p>Try printing one of our earlier objects directly, like <code>print(acc)</code> from the bank account example. You will get something unreadable like <code>&lt;__main__.BankAccount object at 0x7f...&gt;</code>. Try comparing two objects that hold the same data with <code>==</code>, and you will get <code>False</code>, even though they look the same. <strong>Dunder methods</strong> (short for "double underscore methods") are how we teach our own classes to work naturally with Python's built-in tools, <code>print()</code>, <code>==</code>, <code>+</code>, <code>len()</code>, sorting, and more.</p>
+    <p>By the end of this post you will know:</p>
+    <ol>
+      <li>What a dunder method is, and why <code>__init__</code> was one all along</li>
+      <li><code>__str__</code> and <code>__repr__</code>, controlling how an object displays</li>
+      <li><code>__eq__</code> and <code>__lt__</code>, controlling comparison and sorting</li>
+      <li><code>__add__</code>, letting <code>+</code> work on your own objects</li>
+      <li><code>__len__</code>, letting <code>len()</code> work on your own objects</li>
+    </ol>
+
+    <hr>
+
+    <h2>1. What is a Dunder Method?</h2>
+    <blockquote>A dunder method has double underscores on both sides, like __init__ or __str__. It connects your class to some built-in Python behaviour.</blockquote>
+    <p>You have actually already used one in every class so far. <code>__init__</code> is a dunder method, and Python calls it automatically whenever you create a new object. This post looks at a few more common ones.</p>
+
+    <hr>
+
+    <h2>2. __str__: Controlling How an Object Prints</h2>
+    <pre><code>class Point:
+    def __init__(self, x, y):
+        self.x = x
+        self.y = y
+
+    def __str__(self):
+        return f"Point({self.x}, {self.y})"
+
+p1 = Point(1, 2)
+print(p1)    # Point(1, 2)</code></pre>
+    <p>Without <code>__str__</code>, <code>print(p1)</code> would show something unreadable like <code>&lt;__main__.Point object at 0x...&gt;</code>. Python calls <code>__str__</code> by itself, any time an object needs to be shown as text, like inside <code>print()</code> or an f-string.</p>
+
+    <h3>__repr__: A Version Mainly Meant for Developers</h3>
+    <p><code>__repr__</code> is closely related to <code>__str__</code>. It is meant to be a clear, exact description, mainly useful while debugging, and Python uses it as a backup whenever <code>__str__</code> is missing:</p>
+    <pre><code>class Point2:
+    def __init__(self, x, y):
+        self.x = x
+        self.y = y
+
+    def __repr__(self):
+        return f"Point2(x={self.x}, y={self.y})"
+
+p2 = Point2(1, 2)
+print(p2)         # Point2(x=1, y=2)   , __repr__ used since __str__ is missing
+print([p2])       # [Point2(x=1, y=2)] , lists always use __repr__ for their items</code></pre>
+    <p>A simple rule that works well: write <code>__repr__</code> so it shows something you could copy and paste back into Python to rebuild the object. Only add a separate <code>__str__</code> if you also want a friendlier, easier-to-read version for <code>print()</code>.</p>
+
+    <hr>
+
+    <h2>3. __eq__ and __lt__: Comparing Objects</h2>
+    <pre><code>class Vector:
+    def __init__(self, x, y):
+        self.x = x
+        self.y = y
+
+    def __repr__(self):
+        return f"Vector({self.x}, {self.y})"
+
+    def __eq__(self, other):
+        return self.x == other.x and self.y == other.y
+
+    def __lt__(self, other):
+        return (self.x ** 2 + self.y ** 2) < (other.x ** 2 + other.y ** 2)
+
+v1 = Vector(1, 2)
+v2 = Vector(3, 4)
+
+print(v1 == v2)    # False
+print(v1 == Vector(1, 2))    # True, same x and y</code></pre>
+    <p>Without <code>__eq__</code>, <code>==</code> would only check whether the two objects are the exact same one in memory. So even two vectors with the same <code>x</code> and <code>y</code> would still come back <code>False</code>. <code>__lt__</code> tells Python what "smaller than" means for your object, here we decided a shorter vector counts as smaller:</p>
+    <pre><code>print(v1 < v2)               # True, since 1**2+2**2 < 3**2+4**2
+
+print(sorted([v2, v1]))
+# [Vector(1, 2), Vector(3, 4)]</code></pre>
+    <p>Once <code>__lt__</code> is written, Python's built-in <code>sorted()</code> just works on your objects, the same way it already worked on numbers and strings.</p>
+
+    <hr>
+
+    <h2>4. __add__: Letting + Work on Your Objects</h2>
+    <pre><code>class Vector2:
+    def __init__(self, x, y):
+        self.x = x
+        self.y = y
+
+    def __add__(self, other):
+        return Vector2(self.x + other.x, self.y + other.y)
+
+    def __repr__(self):
+        return f"Vector2({self.x}, {self.y})"
+
+a = Vector2(1, 2)
+b = Vector2(3, 4)
+
+print(a + b)    # Vector2(4, 6)</code></pre>
+    <p>Behind the scenes, <code>a + b</code> is really calling <code>a.__add__(b)</code>. This is exactly how Python's own numbers work too, <code>3 + 4</code> is secretly <code>(3).__add__(4)</code>, we just never had to think about it before now.</p>
+
+    <hr>
+
+    <h2>5. __len__: Letting len() Work on Your Objects</h2>
+    <pre><code>class Playlist:
+    def __init__(self, songs):
+        self.songs = songs
+
+    def __len__(self):
+        return len(self.songs)
+
+p = Playlist(["Song A", "Song B", "Song C"])
+print(len(p))    # 3</code></pre>
+    <p><code>len(p)</code> quietly calls <code>p.__len__()</code> for us. This lets your own object be used anywhere Python expects something with a length, which is useful if your object is later passed into code that was originally written for lists or other built-in collections.</p>
+
+    <hr>
+
+    <h2>6. Common Dunder Methods, Quick Reference</h2>
+    <table>
+      <tr><th>Method</th><th>Triggered by</th></tr>
+      <tr><td><code>__init__</code></td><td>Creating a new object</td></tr>
+      <tr><td><code>__str__</code></td><td><code>print(obj)</code>, <code>str(obj)</code>, f-strings</td></tr>
+      <tr><td><code>__repr__</code></td><td><code>repr(obj)</code>, showing an object inside a list, fallback for <code>print()</code></td></tr>
+      <tr><td><code>__eq__</code></td><td><code>obj1 == obj2</code></td></tr>
+      <tr><td><code>__lt__</code></td><td><code>obj1 &lt; obj2</code>, and <code>sorted()</code></td></tr>
+      <tr><td><code>__add__</code></td><td><code>obj1 + obj2</code></td></tr>
+      <tr><td><code>__len__</code></td><td><code>len(obj)</code></td></tr>
+    </table>
+
+    <hr>
+
+    <h2>Common Mistakes</h2>
+    <table>
+      <tr><th>Mistake</th><th>What happens</th><th>Fix</th></tr>
+      <tr><td>Comparing two objects with <code>==</code> without defining <code>__eq__</code></td><td>Always <code>False</code>, even with the same values</td><td>Define <code>__eq__</code> if you need value comparison</td></tr>
+      <tr><td>Calling <code>sorted()</code> on custom objects without <code>__lt__</code></td><td><code>TypeError</code>, objects cannot be compared</td><td>Define <code>__lt__</code> to say how two objects should be ordered</td></tr>
+      <tr><td>Defining <code>__str__</code> to return something other than a string</td><td><code>TypeError</code></td><td><code>__str__</code> and <code>__repr__</code> must always <code>return</code> a string</td></tr>
+      <tr><td>Printing an object without <code>__str__</code> or <code>__repr__</code></td><td>An unreadable memory address is shown</td><td>Define at least one of them to control how it prints</td></tr>
+    </table>
+
+    <hr>
+
+    <h2>Quick Recap</h2>
+    <table>
+      <tr><th>You need</th><th>Use</th></tr>
+      <tr><td>A friendly, readable print of an object</td><td><code>__str__</code></td></tr>
+      <tr><td>An unambiguous, debug-focused description</td><td><code>__repr__</code></td></tr>
+      <tr><td>Value-based equality with <code>==</code></td><td><code>__eq__</code></td></tr>
+      <tr><td>An ordering, so <code>sorted()</code> works</td><td><code>__lt__</code></td></tr>
+      <tr><td><code>+</code> to work between two of your objects</td><td><code>__add__</code></td></tr>
+      <tr><td><code>len()</code> to work on your object</td><td><code>__len__</code></td></tr>
+    </table>
+    <p>With classes, inheritance, encapsulation and dunder methods, you now have the basic toolkit of object-oriented Python. These are the same ideas that pandas' <code>DataFrame</code>, and scikit-learn's <code>model.fit()</code> style, are built on underneath.</p>
+
+    <hr>
+
+    <h2>Practice Questions</h2>
+    <ol>
+      <li>What is the difference between <code>__str__</code> and <code>__repr__</code>?</li>
+      <li>What method does Python call behind the scenes for <code>a + b</code>?</li>
+      <li>Why does <code>sorted()</code> fail on a list of custom objects with no <code>__lt__</code> defined?</li>
+      <li>What does defining <code>__len__</code> let you do with your object?</li>
+    </ol>
+    <h4>Answers</h4>
+    <ol>
+      <li><code>__str__</code> is meant to be a friendly, readable display. <code>__repr__</code> is meant to be unambiguous and debug-focused, and is used as a fallback, and always used inside lists.</li>
+      <li><code>a.__add__(b)</code></li>
+      <li>Python does not know how to decide which of two custom objects is "smaller", so it cannot put them in order without a defined <code>__lt__</code>.</li>
+      <li>Use it with Python's built-in <code>len()</code> function, just like you would with a list or a string.</li>
+    </ol>
+
+  </article>
+
+  <footer>
+    <div>© 2026 notebook. · articles added regularly</div>
+    <div>
+      <a href="../index.html">Home</a>
+    </div>
+  </footer>
+</div>
+
+</body>
+</html>

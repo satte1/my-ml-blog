@@ -1,0 +1,213 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Encapsulation and Properties: notebook.</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,500;0,9..144,600;1,9..144,500&family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans:wght@400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../style.css">
+</head>
+<body>
+
+<div class="wrap">
+  <header>
+    <div class="nav-row">
+      <div class="brand">notebook.</div>
+      <nav>
+        <a href="../index.html#topics">Topics</a>
+        <a href="../index.html#about">About</a>
+        <a href="../index.html#courses">Courses</a>
+        <a href="../index.html#book" class="cta">Book a Call</a>
+      </nav>
+    </div>
+  </header>
+
+  <div class="article-header">
+    <a href="../index.html#topics" class="back-link">← Back to all articles</a>
+    <div class="article-meta">
+      <span>SEP 2026</span>
+      <span>By Mukesh</span>
+      <span class="tag">Python</span>
+    </div>
+    <h1>Encapsulation and Properties</h1>
+  </div>
+
+  <article class="article-body">
+
+    <h2>Why This Topic Matters</h2>
+    <p>So far, any code outside our class could freely read or change any attribute. Even <code>book.price = -500</code> would work fine, even though a negative price makes no sense. <strong>Encapsulation</strong> means controlling how the data inside an object can be read or changed, so the object can protect its own rules.</p>
+    <p>By the end of this post you will know:</p>
+    <ol>
+      <li>The underscore conventions Python uses for "internal" data</li>
+      <li>How to use <code>@property</code> to add validation to an attribute</li>
+      <li>How double-underscore name mangling works, and what it actually protects against</li>
+      <li>How to make an attribute fully read-only</li>
+    </ol>
+
+    <hr>
+
+    <h2>1. The Single Underscore Convention</h2>
+    <blockquote>A leading underscore, like self._price, is a message to other programmers: "please do not touch this directly, use the methods instead."</blockquote>
+    <p>Python does not actually stop you from reading <code>_price</code> from outside the class, it is only a signal, not a real lock. But almost every Python programmer understands and respects this signal.</p>
+
+    <hr>
+
+    <h2>2. @property: Checking a Value Every Time It Changes</h2>
+    <p>A <code>@property</code> lets you add a check to an attribute, without changing how someone else uses it from outside the class:</p>
+    <pre><code>class Book:
+    def __init__(self, title, price):
+        self.title = title
+        self._price = price
+
+    @property
+    def price(self):
+        return self._price
+
+    @price.setter
+    def price(self, value):
+        if value < 0:
+            raise ValueError("Price cannot be negative")
+        self._price = value
+
+b = Book("Python 101", 500)
+print(b.price)     # 500
+
+b.price = 600       # goes through the setter
+print(b.price)      # 600
+
+b.price = -10</code></pre>
+    <pre><code>ValueError: Price cannot be negative</code></pre>
+    <p><code>b.price</code> still looks like a normal attribute from the outside, no brackets, just <code>b.price</code>. But every time it is read, it quietly goes through the <code>@property</code> method, and every time it is set, it goes through the <code>@price.setter</code> method. This is the main use of encapsulation in everyday Python: it still looks simple from the outside, but there is a rule checking it underneath.</p>
+
+    <h3>Making a Value Read-Only</h3>
+    <p>If you leave out the setter completely, the attribute becomes read-only, it can be read, but never changed:</p>
+    <pre><code>class ReadOnlyPoint:
+    def __init__(self, x, y):
+        self._x = x
+        self._y = y
+
+    @property
+    def x(self):
+        return self._x
+
+    @property
+    def y(self):
+        return self._y
+
+p = ReadOnlyPoint(1, 2)
+print(p.x, p.y)    # 1 2
+
+p.x = 5</code></pre>
+    <pre><code>AttributeError: property 'x' of 'ReadOnlyPoint' object has no setter</code></pre>
+    <p>This is useful for values that should stay fixed once an object is created. It works like a tuple being unchangeable, but applied to just one or two fields of an object, instead of the whole thing.</p>
+
+    <hr>
+
+    <h2>3. Name Mangling with Double Underscore</h2>
+    <p>A double leading underscore makes an attribute harder to access from outside the class by accident:</p>
+    <pre><code>class Account:
+    def __init__(self, balance):
+        self.__balance = balance
+
+    def deposit(self, amount):
+        self.__balance += amount
+
+    def get_balance(self):
+        return self.__balance
+
+acc = Account(1000)
+acc.deposit(500)
+print(acc.get_balance())    # 1500
+
+print(acc.__balance)</code></pre>
+    <pre><code>AttributeError: 'Account' object has no attribute '__balance'</code></pre>
+    <p>This is not real security, Python simply renames the attribute behind the scenes (to something like <code>_Account__balance</code>), it does not truly hide it. But it clearly says "use the methods, not the raw attribute", and it stops small typos elsewhere in the code from silently creating a brand new attribute by mistake.</p>
+
+    <hr>
+
+    <h2>4. Practical Example: A Wallet with Validated Balance</h2>
+    <pre><code>class Wallet:
+    def __init__(self, amount=0):
+        self.__amount = amount
+
+    @property
+    def amount(self):
+        return self.__amount
+
+    @amount.setter
+    def amount(self, value):
+        if value < 0:
+            raise ValueError("Amount cannot be negative")
+        self.__amount = value
+
+w = Wallet(100)
+w.amount = 200
+print(w.amount)    # 200
+
+w.amount = -5</code></pre>
+    <pre><code>ValueError: Amount cannot be negative</code></pre>
+    <p>Using <code>@property</code> together with a double-underscore attribute gives you both benefits at once: the value gets checked every time it changes, and there is a clear signal that the raw value should not be touched directly.</p>
+
+    <hr>
+
+    <h2>5. When to Bother with Encapsulation</h2>
+    <table>
+      <tr><th>Situation</th><th>What to do</th></tr>
+      <tr><td>A simple attribute with no rules attached (like a name)</td><td>Leave it as a plain attribute, no property needed</td></tr>
+      <tr><td>A value that must always stay within some range, or follow a rule</td><td>Use <code>@property</code> with a setter that checks it</td></tr>
+      <tr><td>A value that should never change after creation</td><td>Use <code>@property</code> with no setter</td></tr>
+      <tr><td>Internal data other code should not touch directly, but does not need strict enforcement</td><td>A single leading underscore, as a signal</td></tr>
+    </table>
+
+    <hr>
+
+    <h2>Common Mistakes</h2>
+    <table>
+      <tr><th>Mistake</th><th>What happens</th><th>Fix</th></tr>
+      <tr><td>Adding validation logic directly in <code>__init__</code> but not in later assignments</td><td>Later code can still set an invalid value directly</td><td>Use <code>@property</code> so every assignment, not just the first, goes through the check</td></tr>
+      <tr><td>Assuming double underscore fully hides an attribute</td><td>It is renamed, not hidden, and can still be accessed with the mangled name</td><td>Treat it as a strong convention, not real security</td></tr>
+      <tr><td>Naming the property method something different from the attribute</td><td>The getter and setter do not pair up correctly</td><td>Both <code>@property</code> and <code>@x.setter</code> must use the exact same method name</td></tr>
+    </table>
+
+    <hr>
+
+    <h2>Quick Recap</h2>
+    <table>
+      <tr><th>You need</th><th>Use</th></tr>
+      <tr><td>A soft signal that an attribute is internal</td><td>a single leading underscore, <code>self._x</code></td></tr>
+      <tr><td>To validate a value whenever it is set</td><td><code>@property</code> and <code>@x.setter</code></td></tr>
+      <tr><td>A fully read-only attribute</td><td><code>@property</code> with no setter</td></tr>
+      <tr><td>To make an attribute harder to reach by accident</td><td>a double leading underscore, <code>self.__x</code></td></tr>
+    </table>
+    <p>Up next: Special (Dunder) Methods, where we make our own objects work with <code>print()</code>, <code>==</code>, <code>+</code>, and other built-in Python behaviour.</p>
+
+    <hr>
+
+    <h2>Practice Questions</h2>
+    <ol>
+      <li>What is the difference between a single underscore and a double underscore prefix?</li>
+      <li>Why does <code>b.price = -10</code> raise an error, even though <code>price</code> looks like a normal attribute?</li>
+      <li>How do you make a property fully read-only?</li>
+      <li>Does a double-underscore attribute stop all outside access completely?</li>
+    </ol>
+    <h4>Answers</h4>
+    <ol>
+      <li>A single underscore is only a convention, "treat as internal". A double underscore triggers name mangling, making accidental outside access harder.</li>
+      <li>Because <code>price</code> is a <code>@property</code> with a setter that checks the value before allowing the assignment.</li>
+      <li>Define the <code>@property</code> getter, and do not define a matching <code>@x.setter</code>.</li>
+      <li>No, it renames the attribute rather than truly hiding it, it mainly protects against accidental access, not determined access.</li>
+    </ol>
+
+  </article>
+
+  <footer>
+    <div>© 2026 notebook. · articles added regularly</div>
+    <div>
+      <a href="../index.html">Home</a>
+    </div>
+  </footer>
+</div>
+
+</body>
+</html>
