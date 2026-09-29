@@ -1,0 +1,242 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Inheritance and Polymorphism: notebook.</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,500;0,9..144,600;1,9..144,500&family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans:wght@400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../style.css">
+</head>
+<body>
+
+<div class="wrap">
+  <header>
+    <div class="nav-row">
+      <div class="brand">notebook.</div>
+      <nav>
+        <a href="../index.html#topics">Topics</a>
+        <a href="../index.html#about">About</a>
+        <a href="../index.html#courses">Courses</a>
+        <a href="../index.html#book" class="cta">Book a Call</a>
+      </nav>
+    </div>
+  </header>
+
+  <div class="article-header">
+    <a href="../index.html#topics" class="back-link">← Back to all articles</a>
+    <div class="article-meta">
+      <span>SEP 2026</span>
+      <span>By Mukesh</span>
+      <span class="tag">Python</span>
+    </div>
+    <h1>Inheritance and Polymorphism</h1>
+  </div>
+
+  <article class="article-body">
+
+    <h2>Why This Topic Matters</h2>
+    <p>In an earlier post on classes and objects, we built classes that stood completely on their own. But in real programs, many classes are closely related to each other. A <code>Dog</code> and a <code>Cat</code> are both kinds of <code>Animal</code>. A card payment and a UPI payment are both kinds of <code>Payment</code>. <strong>Inheritance</strong> lets you write the shared parts once, and <strong>polymorphism</strong> lets you treat all these related objects the same way, even though each one behaves a little differently underneath.</p>
+    <p>By the end of this post you will know:</p>
+    <ol>
+      <li>How one class can inherit from another</li>
+      <li>How to override and extend a parent's method with <code>super()</code></li>
+      <li>What polymorphism means in practice</li>
+      <li>How multiple inheritance and the method resolution order work</li>
+      <li>How to write a simple "must implement this" method</li>
+    </ol>
+
+    <hr>
+
+    <h2>1. Inheritance</h2>
+    <blockquote>Inheritance lets a new class reuse the code that is already written in another class. The new class only needs to add or change the parts that are different.</blockquote>
+    <pre><code>class Animal:
+    def __init__(self, name):
+        self.name = name
+
+    def speak(self):
+        return f"{self.name} makes a sound"
+
+class Dog(Animal):
+    def speak(self):
+        return f"{self.name} says Woof"
+
+class Cat(Animal):
+    pass
+
+a = Animal("Generic")
+d = Dog("Rex")
+c = Cat("Whiskers")
+
+print(a.speak())    # Generic makes a sound
+print(d.speak())    # Rex says Woof
+print(c.speak())    # Whiskers makes a sound</code></pre>
+    <p>Writing <code>class Dog(Animal):</code> means <code>Dog</code> <strong>inherits</strong> from <code>Animal</code>. <code>Animal</code> is called the parent class, and <code>Dog</code> and <code>Cat</code> are its child classes. <code>Cat</code> did not write its own <code>speak()</code> method, so it simply borrows <code>Animal</code>'s version. <code>Dog</code> wrote its own <code>speak()</code> method, so it uses that one instead. This is called <strong>overriding</strong>.</p>
+
+    <h3>super(): Reusing the Parent's Code</h3>
+    <p>Sometimes you do not want to fully replace the parent's method, you just want to add a little extra to it. <code>super()</code> lets a child class call the parent's own version of a method:</p>
+    <pre><code>class Employee(Animal):
+    def __init__(self, name, salary):
+        super().__init__(name)     # reuse Animal's __init__
+        self.salary = salary
+
+    def speak(self):
+        base = super().speak()     # reuse Animal's speak()
+        return base + f", earns {self.salary}"
+
+e = Employee("Bob", 50000)
+print(e.speak())    # Bob makes a sound, earns 50000</code></pre>
+    <p>This example is a bit unusual (an employee is not really an animal), but it shows how <code>super()</code> works clearly. <code>super().__init__(name)</code> ran the parent's own setup code for us, so we did not have to write <code>self.name = name</code> a second time.</p>
+
+    <h3>Checking Types with isinstance()</h3>
+    <pre><code>print(isinstance(d, Animal))    # True, a Dog is also an Animal
+print(isinstance(d, Dog))       # True
+print(isinstance(a, Dog))       # False, a plain Animal is not a Dog
+
+print(type(d).__name__)         # Dog</code></pre>
+
+    <hr>
+
+    <h2>2. Polymorphism</h2>
+    <blockquote>Polymorphism means different classes can answer the same method call, each in its own way.</blockquote>
+    <p>The word "poly" means many, and "morph" means form. So polymorphism just means "many forms of the same action."</p>
+    <pre><code>class Shape:
+    def area(self):
+        return 0
+
+class Circle(Shape):
+    def __init__(self, r):
+        self.r = r
+    def area(self):
+        return 3.14159 * self.r ** 2
+
+class Square(Shape):
+    def __init__(self, s):
+        self.s = s
+    def area(self):
+        return self.s ** 2
+
+shapes = [Circle(3), Square(4)]
+
+for shape in shapes:
+    print(type(shape).__name__, shape.area())
+
+# Circle 28.27431
+# Square 16</code></pre>
+    <p>The loop calls <code>shape.area()</code> without needing to know whether <code>shape</code> is a <code>Circle</code> or a <code>Square</code>. Each object already knows how to work out its own area. This is the real benefit of inheritance, one piece of code can work with many different types.</p>
+    <pre><code>def print_area(shape):
+    print(f"Area: {shape.area()}")
+
+for shape in shapes:
+    print_area(shape)
+
+# Area: 28.27431
+# Area: 16</code></pre>
+    <p>Notice that <code>print_area()</code> did not need any <code>if</code> statement to check what kind of shape it got. If you add a new shape class later, like <code>Triangle</code>, <code>print_area()</code> will still work with no changes at all, as long as <code>Triangle</code> also has an <code>area()</code> method.</p>
+
+    <h3>Making Sure a Subclass Writes Its Own Method</h3>
+    <p>Sometimes a parent class should never be used directly, it only exists so other classes can inherit from it. We can make Python show a clear error if someone tries, by raising <code>NotImplementedError</code>:</p>
+    <pre><code>class Payment:
+    def pay(self, amount):
+        raise NotImplementedError("Subclass must implement pay()")
+
+class CardPayment(Payment):
+    def pay(self, amount):
+        return f"Paid {amount} by card"
+
+print(CardPayment().pay(100))    # Paid 100 by card
+
+Payment().pay(100)</code></pre>
+    <pre><code>NotImplementedError: Subclass must implement pay()</code></pre>
+    <p>This does not stop anyone from writing the code, but it fails with a clear message the moment someone tries to use <code>Payment</code> directly, instead of one of its subclasses.</p>
+
+    <hr>
+
+    <h2>3. Multiple Inheritance</h2>
+    <p>A class can inherit from more than one parent at once:</p>
+    <pre><code>class Flyer:
+    def fly(self):
+        return "I can fly"
+
+class Swimmer:
+    def swim(self):
+        return "I can swim"
+
+class Duck(Flyer, Swimmer):
+    pass
+
+d = Duck()
+print(d.fly())     # I can fly
+print(d.swim())    # I can swim</code></pre>
+
+    <h3>Which Parent Wins? The Method Resolution Order</h3>
+    <p>What if two parent classes have a method with the same name? Python needs a rule to decide which one to use. It looks at the parents from left to right, in the order you wrote them:</p>
+    <pre><code>class A:
+    def greet(self):
+        return "Hello from A"
+
+class B:
+    def greet(self):
+        return "Hello from B"
+
+class C(A, B):
+    pass
+
+print(C().greet())    # Hello from A, since A is listed first</code></pre>
+    <p>You can see this search order for yourself with <code>__mro__</code>:</p>
+    <pre><code>print(Duck.__mro__)
+# (&lt;class 'Duck'&gt;, &lt;class 'Flyer'&gt;, &lt;class 'Swimmer'&gt;, &lt;class 'object'&gt;)</code></pre>
+    <p>Multiple inheritance is a useful tool, but it can get confusing if the parent classes have a lot of overlap. It works best for small, simple abilities, like <code>Flyer</code> and <code>Swimmer</code>, rather than big, complicated parent classes.</p>
+
+    <hr>
+
+    <h2>Common Mistakes</h2>
+    <table>
+      <tr><th>Mistake</th><th>What happens</th><th>Fix</th></tr>
+      <tr><td>Forgetting to call <code>super().__init__()</code> in a child class</td><td>The parent's setup code never runs</td><td>Call <code>super().__init__(...)</code> at the start of the child's <code>__init__</code></td></tr>
+      <tr><td>Writing an <code>if isinstance(...)</code> chain instead of overriding a method</td><td>Works, but gets long and brittle as more types are added</td><td>Give each subclass its own version of the method, and let polymorphism handle the rest</td></tr>
+      <tr><td>Assuming the second parent's method always wins in multiple inheritance</td><td>Wrong assumption, it depends on the MRO</td><td>Check <code>ClassName.__mro__</code> if you are unsure which method runs</td></tr>
+    </table>
+
+    <hr>
+
+    <h2>Quick Recap</h2>
+    <table>
+      <tr><th>You need</th><th>Use</th></tr>
+      <tr><td>One class to reuse another class's code</td><td>inheritance, <code>class Child(Parent):</code></td></tr>
+      <tr><td>To call the parent's version of a method</td><td><code>super()</code></td></tr>
+      <tr><td>Different classes to respond to the same call, each their own way</td><td>polymorphism, override the method in each subclass</td></tr>
+      <tr><td>To force a subclass to implement something</td><td><code>raise NotImplementedError(...)</code> in the parent</td></tr>
+      <tr><td>A class combining abilities from more than one parent</td><td>multiple inheritance, <code>class C(A, B):</code></td></tr>
+    </table>
+    <p>Up next: Encapsulation, where we learn to control how the data inside an object can be read or changed.</p>
+
+    <hr>
+
+    <h2>Practice Questions</h2>
+    <ol>
+      <li>What does it mean for a child class to "override" a method?</li>
+      <li>What does <code>super().__init__()</code> do?</li>
+      <li>In <code>class C(A, B):</code>, if both <code>A</code> and <code>B</code> define <code>greet()</code>, which one runs when you call <code>C().greet()</code>?</li>
+      <li>Why is polymorphism useful in the shapes example, instead of writing separate functions for each shape?</li>
+    </ol>
+    <h4>Answers</h4>
+    <ol>
+      <li>The child class defines its own version of a method that already exists in the parent, and that version is used instead.</li>
+      <li>It runs the parent class's own <code>__init__</code>, so the child does not need to repeat that setup code.</li>
+      <li><code>A</code>'s version, since Python searches parents left to right in the order they are listed.</li>
+      <li>One function, like <code>print_area()</code>, works for every shape, current and future, as long as each has its own <code>area()</code> method, no extra <code>if</code> checks are needed.</li>
+    </ol>
+
+  </article>
+
+  <footer>
+    <div>© 2026 notebook. · articles added regularly</div>
+    <div>
+      <a href="../index.html">Home</a>
+    </div>
+  </footer>
+</div>
+
+</body>
+</html>

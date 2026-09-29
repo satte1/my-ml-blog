@@ -1,0 +1,244 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Classes and Objects: notebook.</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,500;0,9..144,600;1,9..144,500&family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans:wght@400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../style.css">
+</head>
+<body>
+
+<div class="wrap">
+  <header>
+    <div class="nav-row">
+      <div class="brand">notebook.</div>
+      <nav>
+        <a href="../index.html#topics">Topics</a>
+        <a href="../index.html#about">About</a>
+        <a href="../index.html#courses">Courses</a>
+        <a href="../index.html#book" class="cta">Book a Call</a>
+      </nav>
+    </div>
+  </header>
+
+  <div class="article-header">
+    <a href="../index.html#topics" class="back-link">← Back to all articles</a>
+    <div class="article-meta">
+      <span>SEP 2026</span>
+      <span>By Mukesh</span>
+      <span class="tag">Python</span>
+    </div>
+    <h1>Classes and Objects</h1>
+  </div>
+
+  <article class="article-body">
+
+    <h2>Why This Topic Matters</h2>
+    <p>Earlier, when we needed to store a student's name and marks together, we used a dictionary: <code>{"name": "A", "marks": [80, 90]}</code>. This works, but it has a problem. As you write more code, you will use this same shape again and again. It is easy to spell a key wrong, or forget to add one, and Python will not warn you.</p>
+    <p><strong>Object-oriented programming</strong> (OOP) gives us a better way. It lets us create our own custom type, one that holds both the data and the actions that work on that data, together in one place. In this post, you will learn:</p>
+    <ol>
+      <li>What a class is, and what an object is, one at a time</li>
+      <li>Why we need a constructor, and what problem it solves</li>
+      <li>The difference between data that belongs to one object, and data shared by all</li>
+      <li>When to use a class instead of a dictionary</li>
+      <li>The four big ideas that OOP is built on</li>
+    </ol>
+
+    <hr>
+
+    <h2>1. What is a Class?</h2>
+    <blockquote>A class is a plan. It describes what something will look like and what it can do, without actually being a real thing itself.</blockquote>
+    <p>Think of a class like an architect's drawing of a house, or a cookie cutter. The drawing shows where the rooms and doors go, but you cannot live inside a drawing. It only becomes a real house once someone builds it.</p>
+    <pre><code>class Student:
+    pass</code></pre>
+    <p>This is a complete, working class. It does nothing yet, and it holds no data. It simply tells Python "there is a new type of thing called <code>Student</code>." We have only described the shape, we have not made anything real yet.</p>
+
+    <hr>
+
+    <h2>2. What is an Object?</h2>
+    <blockquote>An object is one real thing made from a class. Making an object from a class is called instantiation.</blockquote>
+    <p>Going back to our house example, an object is the actual house built from the drawing, the one with a real address, that you can walk into. You can build many houses from the same drawing, and each one is separate from the others:</p>
+    <pre><code>s1 = Student()
+s2 = Student()
+
+print(type(s1))    # &lt;class '__main__.Student'&gt;
+print(s1 is s2)    # False, two separate objects</code></pre>
+    <p><code>Student()</code> is how we make an object. <code>s1</code> and <code>s2</code> are both objects of the <code>Student</code> class. Objects are also called <strong>instances</strong>. Even though they come from the same class, they are two different objects, so changing one will not affect the other.</p>
+
+    <hr>
+
+    <h2>3. A Class Without a Constructor</h2>
+    <p>Right now, our <code>Student</code> class holds no data. We can still add data to one object, from outside the class:</p>
+    <pre><code>class Student:
+    pass
+
+s1 = Student()
+s1.name = "Satyam"
+s1.age = 25
+
+print(s1.name, s1.age)    # Satyam 25</code></pre>
+    <p>This works, and it shows something useful: an object is really just a container that can hold pieces of data. We call these pieces <strong>attributes</strong>. But this way of adding data has a real problem. Nothing forces every <code>Student</code> to have a <code>name</code> and an <code>age</code>:</p>
+    <pre><code>s2 = Student()
+print(s2.name)</code></pre>
+    <pre><code>AttributeError: 'Student' object has no attribute 'name'</code></pre>
+    <p><code>s2</code> was made without any errors, but forgetting to set its <code>name</code> causes a crash later, maybe far away from where the mistake actually happened, inside some other function that expected every <code>Student</code> to already have a name. A <strong>constructor</strong> fixes exactly this problem.</p>
+
+    <hr>
+
+    <h2>4. The Constructor: __init__</h2>
+    <blockquote>A constructor is a special method that runs by itself every time a new object is made. It is where you set up the object's starting data.</blockquote>
+    <p>In Python, the constructor always has the name <code>__init__</code>:</p>
+    <pre><code>class Student2:
+    def __init__(self, name, age):
+        self.name = name
+        self.age = age
+
+s3 = Student2("Anita", 30)
+print(s3.name, s3.age)    # Anita 30</code></pre>
+    <p>Now it is <strong>not possible</strong> to make a <code>Student2</code> without giving it a <code>name</code> and an <code>age</code>. Python simply will not allow it:</p>
+    <pre><code>s4 = Student2()</code></pre>
+    <pre><code>TypeError: Student2.__init__() missing 2 required positional arguments: 'name' and 'age'</code></pre>
+    <p>This is the constructor doing its job. It makes sure every object starts out complete, with nothing missing. <strong><code>self</code></strong> stands for the specific object being made. It is always the first thing written inside any method in a class, and Python fills it in for you automatically, you never type it yourself when you call <code>Student2("Anita", 30)</code>.</p>
+
+    <hr>
+
+    <h2>5. Giving an Object Its Own Actions</h2>
+    <p>A class can also hold functions, called <strong>methods</strong>, that use the object's own data. The data (<code>name</code>, <code>marks</code>) and the action that uses it (<code>average()</code>) sit together in one place:</p>
+    <pre><code>class Student3:
+    def __init__(self, name, marks):
+        self.name = name
+        self.marks = marks
+
+    def average(self):
+        return sum(self.marks) / len(self.marks)
+
+    def describe(self):
+        return f"{self.name} scored an average of {self.average()}"
+
+s5 = Student3("Satyam", [80, 90, 70])
+print(s5.average())      # 80.0
+print(s5.describe())     # Satyam scored an average of 80.0</code></pre>
+    <p>Notice how <code>describe()</code> calls <code>self.average()</code>, so one method can use another method on the same object. Each object still keeps its own data separate from every other object:</p>
+    <pre><code>s6 = Student3("Anita", [60, 70, 80])
+print(s5.name, s6.name)    # Satyam Anita</code></pre>
+    <p>Whoever calls <code>s5.describe()</code> does not need to know <em>how</em> the average gets calculated. They just call the method and get an answer back.</p>
+
+    <hr>
+
+    <h2>6. Data That Belongs to One Object, and Data Shared by All</h2>
+    <blockquote>An instance variable belongs to one single object. A class variable is shared by every object made from that class.</blockquote>
+    <p><code>self.name</code> and <code>self.marks</code> above are instance variables, each student keeps their own copy. A class variable is written directly inside the class, but not inside any method:</p>
+    <pre><code>class Counter:
+    count = 0     # class variable, shared by all objects
+
+    def __init__(self):
+        Counter.count += 1
+
+c1 = Counter()
+c2 = Counter()
+c3 = Counter()
+
+print(Counter.count)    # 3</code></pre>
+    <p>Every time a new <code>Counter</code> gets made, the shared <code>count</code> goes up by one. This is useful for things that belong to the class as a whole, like keeping track of how many objects have been created so far.</p>
+
+    <hr>
+
+    <h2>7. A Practical Example: A Simple Bank Account</h2>
+    <pre><code>class BankAccount:
+    def __init__(self, owner, balance=0):
+        self.owner = owner
+        self.balance = balance
+
+    def deposit(self, amount):
+        self.balance += amount
+
+    def withdraw(self, amount):
+        if amount > self.balance:
+            raise ValueError("Insufficient funds")
+        self.balance -= amount
+
+acc = BankAccount("Satyam", 1000)
+acc.deposit(500)
+acc.withdraw(200)
+print(acc.balance)    # 1300</code></pre>
+    <p>Each account object keeps its own <code>balance</code>. The rules for deposit and withdraw sit right next to the data they work on, instead of being spread across separate, disconnected functions. The constructor makes sure every <code>BankAccount</code> starts out with a real <code>owner</code> and <code>balance</code>.</p>
+
+    <hr>
+
+    <h2>8. dict or Class: Which One Should You Use?</h2>
+    <table>
+      <tr><th>Situation</th><th>Use</th></tr>
+      <tr><td>Simple, one-off data with no actions attached to it</td><td><code>dict</code></td></tr>
+      <tr><td>You use the same kind of data, in the same shape, in many places</td><td><code>class</code></td></tr>
+      <tr><td>You need to check, calculate, or enforce a rule on the data</td><td><code>class</code></td></tr>
+      <tr><td>You want a few related types that share some behaviour but differ in others</td><td><code>class</code>, with one class building on another</td></tr>
+    </table>
+
+    <hr>
+
+    <h2>9. The Four Big Ideas Behind OOP</h2>
+    <p>Now that you have seen a class, an object, a constructor, and a method with your own eyes, here are the four ideas that all of object-oriented programming is really built on. You have actually already seen two of them at work above:</p>
+    <table>
+      <tr><th>Idea</th><th>In simple words</th></tr>
+      <tr><td><strong>Encapsulation</strong></td><td>Keep the data and the actions that use it together, in one place, like <code>Student3</code> keeping <code>marks</code> and <code>average()</code> together</td></tr>
+      <tr><td><strong>Abstraction</strong></td><td>Hide the messy details, and give people a simple way to use something, like calling <code>s5.describe()</code> without knowing how the average is worked out</td></tr>
+      <tr><td><strong>Inheritance</strong></td><td>Let one class reuse the code already written in another class</td></tr>
+      <tr><td><strong>Polymorphism</strong></td><td>Let different classes respond to the same instruction in their own way</td></tr>
+    </table>
+    <p>The next two ideas, inheritance and polymorphism, need a second class to make sense, so they get their own detailed post.</p>
+
+    <hr>
+
+    <h2>Common Mistakes</h2>
+    <table>
+      <tr><th>Mistake</th><th>What happens</th><th>Fix</th></tr>
+      <tr><td>Forgetting to write <code>self</code> as the first thing in a method</td><td><code>TypeError</code> about arguments</td><td><code>self</code> must always come first in every method</td></tr>
+      <tr><td>Using a class variable when you meant one object's own variable</td><td>The value is shared, and changes for every object at once</td><td>Set it as <code>self.x = ...</code> inside <code>__init__</code> instead</td></tr>
+      <tr><td>Adding data directly, like <code>s1.name = "A"</code>, instead of using a constructor</td><td>Easy to forget a field on some objects, causing an <code>AttributeError</code> later</td><td>Set every field inside <code>__init__</code>, so it is required, not optional</td></tr>
+    </table>
+
+    <hr>
+
+    <h2>Quick Recap</h2>
+    <table>
+      <tr><th>You need</th><th>Use</th></tr>
+      <tr><td>A plan describing a type, with no real object yet</td><td><code>class</code></td></tr>
+      <tr><td>A real, specific thing made from that plan</td><td>an object, made with <code>ClassName()</code></td></tr>
+      <tr><td>A guarantee that every object starts out complete</td><td>a constructor, <code>__init__(self, ...)</code></td></tr>
+      <tr><td>An action that uses the object's own data</td><td>a method</td></tr>
+      <tr><td>A value shared by every object of a class</td><td>a class variable</td></tr>
+    </table>
+
+    <hr>
+
+    <h2>Practice Questions</h2>
+    <ol>
+      <li>What is the difference between a class and an object?</li>
+      <li>What problem does a constructor solve, that a class without one does not?</li>
+      <li>What does <code>self</code> stand for inside a method?</li>
+      <li>What is the difference between a class variable and an instance variable?</li>
+      <li>Which two of the four big ideas did you already see at work in this post?</li>
+    </ol>
+    <h4>Answers</h4>
+    <ol>
+      <li>A class is the plan, a description with no real object yet. An object is one specific thing made from that plan.</li>
+      <li>It makes sure every object starts out complete, with all its needed data set, instead of allowing objects that are missing something.</li>
+      <li>The specific object the method is currently being used on.</li>
+      <li>A class variable is shared by every object of that class. An instance variable belongs to only one object.</li>
+      <li>Encapsulation, keeping data and actions together, and abstraction, hiding how a method works behind one simple call.</li>
+    </ol>
+
+  </article>
+
+  <footer>
+    <div>© 2026 notebook. · articles added regularly</div>
+    <div>
+      <a href="../index.html">Home</a>
+    </div>
+  </footer>
+</div>
+
+</body>
+</html>
