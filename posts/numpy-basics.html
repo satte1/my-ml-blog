@@ -1,0 +1,294 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>NumPy Basics: notebook.</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,500;0,9..144,600;1,9..144,500&family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans:wght@400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../style.css">
+</head>
+<body>
+
+<div class="wrap">
+  <header>
+    <div class="nav-row">
+      <div class="brand">notebook.</div>
+      <nav>
+        <a href="../index.html#topics">Topics</a>
+        <a href="../index.html#about">About</a>
+        <a href="../index.html#courses">Courses</a>
+        <a href="../index.html#book" class="cta">Book a Call</a>
+      </nav>
+    </div>
+  </header>
+
+  <div class="article-header">
+    <a href="../index.html#topics" class="back-link">← Back to all articles</a>
+    <div class="article-meta">
+      <span>SEP 2026</span>
+      <span>By Mukesh</span>
+      <span class="tag">Python</span>
+    </div>
+    <h1>NumPy Basics</h1>
+  </div>
+
+  <article class="article-body">
+
+    <h2>Why This Topic Matters</h2>
+    <p>We have used regular Python lists to hold numbers so far. Lists work fine for small, everyday tasks, but once you start doing real maths on large sets of numbers, like marks for a thousand students, or pixel values in an image, plain lists start to feel slow and clumsy. <strong>NumPy</strong> is a library built to make this kind of work fast and simple.</p>
+    <p>NumPy is the base that almost every data and machine learning library in Python is built on, including pandas and scikit-learn. In this post, you will learn:</p>
+    <ol>
+      <li>What a NumPy array is, and how it is different from a list</li>
+      <li>How to create arrays in different ways</li>
+      <li>How to do maths on a whole array at once</li>
+      <li>How to pick out specific values from an array</li>
+      <li>How to work with rows, columns and 2D arrays</li>
+    </ol>
+
+    <hr>
+
+    <h2>1. Getting Started</h2>
+    <p>NumPy is not part of core Python, it needs to be installed once, then imported in every file that uses it:</p>
+    <pre><code>import numpy as np</code></pre>
+    <p>Writing <code>as np</code> is a strong convention, almost every piece of NumPy code you will ever see, in tutorials or in real projects, shortens it to <code>np</code>.</p>
+
+    <hr>
+
+    <h2>2. What is a NumPy Array?</h2>
+    <blockquote>A NumPy array is a grid of values, all of the same type, that supports fast maths on the whole grid at once.</blockquote>
+    <pre><code>import numpy as np
+
+a = np.array([1, 2, 3, 4, 5])
+print(a)             # [1 2 3 4 5]
+print(type(a))        # &lt;class 'numpy.ndarray'&gt;</code></pre>
+    <p><code>np.array()</code> turns a normal Python list into a NumPy array, called an <strong>ndarray</strong> (short for "n-dimensional array").</p>
+
+    <h3>2.1 The Big Difference: Maths on the Whole Array</h3>
+    <p>This is the single most important difference between a list and a NumPy array. Watch what happens when we multiply each one by 2:</p>
+    <pre><code>marks = [80, 90, 70]
+print(marks * 2)
+# [80, 90, 70, 80, 90, 70]   , the list just repeats itself
+
+marks_arr = np.array([80, 90, 70])
+print(marks_arr * 2)
+# [160 180 140]              , every number is actually multiplied by 2</code></pre>
+    <p>A list has no idea what "multiply by 2" should mean for a group of numbers, so Python falls back to repeating it, the same behaviour we saw with strings. A NumPy array understands that you want to apply the maths to <strong>every value</strong> at once. This is called <strong>vectorization</strong>, and it is both faster and much easier to write than a loop.</p>
+
+    <hr>
+
+    <h2>3. Creating Arrays</h2>
+
+    <h3>3.1 From a List</h3>
+    <pre><code>arr = np.array([1, 2, 3])</code></pre>
+
+    <h3>3.2 Arrays Filled with Zeros, Ones, or a Range</h3>
+    <pre><code>print(np.zeros((2, 3)))
+# [[0. 0. 0.]
+#  [0. 0. 0.]]
+
+print(np.ones((2, 3)))
+# [[1. 1. 1.]
+#  [1. 1. 1.]]
+
+print(np.arange(0, 10, 2))
+# [0 2 4 6 8]
+
+print(np.linspace(0, 1, 5))
+# [0.   0.25 0.5  0.75 1.  ]</code></pre>
+    <p><code>np.zeros()</code> and <code>np.ones()</code> are useful for creating a starting array of a known size, before filling it in with real values later. <code>np.arange(start, stop, step)</code> is like Python's <code>range()</code>, but it returns an array. <code>np.linspace(start, stop, count)</code> gives you a fixed number of evenly spaced values between two numbers, useful for plotting a smooth curve later.</p>
+
+    <h3>3.3 A 2D Array</h3>
+    <pre><code>grid = np.array([[1, 2, 3], [4, 5, 6]])
+print(grid)
+# [[1 2 3]
+#  [4 5 6]]</code></pre>
+    <p>This is a 2D array, think of it as a small table with rows and columns, similar to a spreadsheet, or a list of lists.</p>
+
+    <h3>3.4 Checking an Array's Shape and Type</h3>
+    <pre><code>print(grid.shape)    # (2, 3)   , 2 rows, 3 columns
+print(grid.ndim)     # 2        , it has 2 dimensions
+print(grid.size)     # 6        , total number of values
+print(grid.dtype)    # int64    , every value is stored as this one type</code></pre>
+    <p><code>dtype</code> is one more difference from a list. Every value in a NumPy array must be the <strong>same type</strong>, usually all numbers. If you mix an <code>int</code> and a <code>float</code> when creating one, NumPy quietly converts everything to <code>float</code>:</p>
+    <pre><code>print(np.array([1, 2, 3]).dtype)       # int64
+print(np.array([1.0, 2, 3]).dtype)     # float64</code></pre>
+
+    <hr>
+
+    <h2>4. Doing Maths on Arrays</h2>
+    <pre><code>a = np.array([1, 2, 3])
+b = np.array([10, 20, 30])
+
+print(a + b)    # [11 22 33]   , added position by position
+print(a * b)    # [10 40 90]   , multiplied position by position
+print(a * 2)    # [2 4 6]      , every value times 2
+print(a + 1)    # [2 3 4]      , every value plus 1</code></pre>
+    <p>When you add two arrays, NumPy lines them up by position and works on each pair. When you combine an array with a single number, like <code>a * 2</code>, that number is applied to every value, this is called <strong>broadcasting</strong>.</p>
+
+    <hr>
+
+    <h2>5. Picking Out Values</h2>
+
+    <h3>5.1 Indexing and Slicing, Just Like a List</h3>
+    <pre><code>marks = np.array([40, 55, 60, 72, 88, 95])
+
+print(marks[0])       # 40    , first value
+print(marks[-1])      # 95    , last value
+print(marks[1:4])     # [55 60 72]</code></pre>
+    <p>This works exactly like list indexing and slicing from earlier posts.</p>
+
+    <h3>5.2 Indexing a 2D Array</h3>
+    <pre><code>m = np.array([
+    [1, 2, 3],
+    [4, 5, 6],
+    [7, 8, 9]
+])
+
+print(m[0, 1])     # 2       , row 0, column 1
+print(m[1])        # [4 5 6] , the whole second row
+print(m[:, 1])     # [2 5 8] , the whole second column
+print(m[0:2, 1:3])
+# [[2 3]
+#  [5 6]]</code></pre>
+    <p><code>m[row, column]</code> is how you reach a single value in a 2D array. A lone <code>:</code> means "every row" or "every column".</p>
+
+    <h3>5.3 Filtering with a Condition</h3>
+    <p>This is one of the most useful things NumPy can do. You can use a condition directly inside the square brackets:</p>
+    <pre><code>n = np.array([10, 20, 30, 40, 50])
+
+print(n > 25)
+# [False False  True  True  True]
+
+print(n[n > 25])
+# [30 40 50]</code></pre>
+    <p><code>n &gt; 25</code> makes an array of <code>True</code>/<code>False</code> values, one for each position. Using that array inside <code>n[...]</code> keeps only the values where it was <code>True</code>. This is called a <strong>boolean mask</strong>, and it replaces what would otherwise be a <code>for</code> loop with an <code>if</code> check inside it.</p>
+    <pre><code>mask = n % 20 == 0
+print(n[mask])    # [20 40]</code></pre>
+
+    <hr>
+
+    <h2>6. Useful Functions</h2>
+    <pre><code>marks = np.array([40, 55, 60, 72, 88, 95])
+
+print(np.sum(marks))     # 410
+print(np.mean(marks))    # 68.33333333333333
+print(np.max(marks))     # 95
+print(np.min(marks))     # 40
+print(np.std(marks))     # 18.979521127315678   , standard deviation</code></pre>
+
+    <h3>6.1 Summing Rows or Columns, with axis</h3>
+    <pre><code>m = np.array([[1, 2, 3], [4, 5, 6]])
+
+print(m.sum())            # 21    , total of everything
+print(m.sum(axis=0))      # [5 7 9]    , add down each column
+print(m.sum(axis=1))      # [6 15]     , add across each row</code></pre>
+    <p><code>axis=0</code> moves down the rows, so it adds up each column. <code>axis=1</code> moves across the columns, so it adds up each row. This trips up a lot of beginners, a quick way to remember it: <code>axis=0</code> squashes the rows together, <code>axis=1</code> squashes the columns together.</p>
+
+    <hr>
+
+    <h2>7. Reshaping an Array</h2>
+    <pre><code>x = np.array([1, 2, 3, 4, 5, 6])
+
+print(x.reshape(2, 3))
+# [[1 2 3]
+#  [4 5 6]]
+
+print(x.reshape(3, 2))
+# [[1 2]
+#  [3 4]
+#  [5 6]]</code></pre>
+    <p><code>.reshape()</code> arranges the same values into a new shape, without changing how many values there are. The new shape must hold exactly the same total count, 6 values must become something like 2x3 or 3x2, not 4x2:</p>
+    <pre><code>x.reshape(4, 2)</code></pre>
+    <pre><code>ValueError: cannot reshape array of size 6 into shape (4,2)</code></pre>
+
+    <h3>7.1 Transposing, Flipping Rows and Columns</h3>
+    <pre><code>grid = np.arange(1, 10).reshape(3, 3)
+print(grid)
+# [[1 2 3]
+#  [4 5 6]
+#  [7 8 9]]
+
+print(grid.T)
+# [[1 4 7]
+#  [2 5 8]
+#  [3 6 9]]</code></pre>
+    <p><code>.T</code> flips the array so rows become columns and columns become rows. This comes up often when preparing data for a machine learning model.</p>
+
+    <hr>
+
+    <h2>8. Practical Example: Finding Students Who Passed</h2>
+    <pre><code>marks = np.array([85, 92, 78, 65, 90])
+
+passed = marks[marks >= 75]
+print(passed)              # [85 92 78 90]
+print(passed.mean())       # 86.25</code></pre>
+    <p>This one line replaces a loop with an <code>if</code> check inside it, filter first with a boolean mask, then calculate on just the filtered values.</p>
+
+    <hr>
+
+    <h2>9. list vs NumPy Array: Which One to Use</h2>
+    <table>
+      <tr><th>Situation</th><th>Use</th></tr>
+      <tr><td>A small, mixed collection of everyday Python values</td><td><code>list</code></td></tr>
+      <tr><td>A large set of numbers you need to do maths on</td><td>NumPy array</td></tr>
+      <tr><td>You need to filter, sum, or average many numbers at once</td><td>NumPy array</td></tr>
+      <tr><td>You are working with a table, grid, or matrix of numbers</td><td>NumPy array</td></tr>
+    </table>
+
+    <hr>
+
+    <h2>Common Mistakes</h2>
+    <table>
+      <tr><th>Mistake</th><th>What happens</th><th>Fix</th></tr>
+      <tr><td>Expecting <code>my_list * 2</code> to multiply each value</td><td>The list is repeated instead</td><td>Convert to a NumPy array first, with <code>np.array(my_list)</code></td></tr>
+      <tr><td>Reshaping into a shape with the wrong total count</td><td><code>ValueError</code></td><td>Make sure rows times columns equals the original size</td></tr>
+      <tr><td>Mixing up <code>axis=0</code> and <code>axis=1</code></td><td>You sum the wrong direction</td><td><code>axis=0</code> works down columns, <code>axis=1</code> works across rows</td></tr>
+      <tr><td>Mixing an <code>int</code> and a <code>float</code> in one array without meaning to</td><td>Every value is silently converted to <code>float</code></td><td>This is usually fine, but check <code>.dtype</code> if the type matters</td></tr>
+    </table>
+
+    <hr>
+
+    <h2>Quick Recap</h2>
+    <table>
+      <tr><th>You need</th><th>Use</th></tr>
+      <tr><td>To turn a list into a fast, maths-ready array</td><td><code>np.array(my_list)</code></td></tr>
+      <tr><td>An array filled with zeros, ones, or a range</td><td><code>np.zeros()</code>, <code>np.ones()</code>, <code>np.arange()</code></td></tr>
+      <tr><td>To keep only values that match a condition</td><td>a boolean mask, <code>arr[arr &gt; 10]</code></td></tr>
+      <tr><td>A total, average, max, or min across an array</td><td><code>np.sum()</code>, <code>np.mean()</code>, <code>np.max()</code>, <code>np.min()</code></td></tr>
+      <tr><td>To add up rows or columns of a 2D array</td><td><code>.sum(axis=0)</code> or <code>.sum(axis=1)</code></td></tr>
+      <tr><td>To change the shape of an array without changing its values</td><td><code>.reshape()</code></td></tr>
+    </table>
+    <p>NumPy arrays are the foundation everything else in data science sits on top of. Once filtering with a boolean mask and doing maths on a whole array feel natural, reading pandas and machine learning code becomes a lot easier, since both are built around these same NumPy ideas underneath.</p>
+
+    <hr>
+
+    <h2>Practice Questions</h2>
+    <ol>
+      <li>What happens when you multiply a plain Python list by 2, compared to a NumPy array?</li>
+      <li>What does <code>arr[arr &gt; 50]</code> do?</li>
+      <li>What is the difference between <code>axis=0</code> and <code>axis=1</code> when summing a 2D array?</li>
+      <li>Why does <code>x.reshape(4, 2)</code> fail on an array with 6 values?</li>
+      <li>What does <code>.T</code> do to a 2D array?</li>
+    </ol>
+    <h4>Answers</h4>
+    <ol>
+      <li>A list is repeated twice, end to end. A NumPy array has every value actually multiplied by 2.</li>
+      <li>It keeps only the values in <code>arr</code> that are greater than 50, using a boolean mask.</li>
+      <li><code>axis=0</code> adds down each column, giving one total per column. <code>axis=1</code> adds across each row, giving one total per row.</li>
+      <li>4 times 2 is 8, but the array only has 6 values, the new shape must hold exactly the same number of values as before.</li>
+      <li>It flips the array so rows become columns and columns become rows.</li>
+    </ol>
+
+  </article>
+
+  <footer>
+    <div>© 2026 notebook. · articles added regularly</div>
+    <div>
+      <a href="../index.html">Home</a>
+    </div>
+  </footer>
+</div>
+
+</body>
+</html>
