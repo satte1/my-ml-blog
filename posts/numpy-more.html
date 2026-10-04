@@ -1,0 +1,317 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>More NumPy: notebook.</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,500;0,9..144,600;1,9..144,500&family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans:wght@400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../style.css">
+</head>
+<body>
+
+<div class="wrap">
+  <header>
+    <div class="nav-row">
+      <div class="brand">notebook.</div>
+      <nav>
+        <a href="../index.html#topics">Topics</a>
+        <a href="../index.html#about">About</a>
+        <a href="../index.html#courses">Courses</a>
+        <a href="../index.html#book" class="cta">Book a Call</a>
+      </nav>
+    </div>
+  </header>
+
+  <div class="article-header">
+    <a href="../index.html#topics" class="back-link">← Back to all articles</a>
+    <div class="article-meta">
+      <span>OCT 2026</span>
+      <span>By Mukesh</span>
+      <span class="tag">Python</span>
+    </div>
+    <h1>More NumPy: Sorting, Random Numbers, Linear Algebra and More</h1>
+  </div>
+
+  <article class="article-body">
+
+    <h2>Why This Topic Matters</h2>
+    <p>In an earlier post, we covered the basics of NumPy, creating arrays, doing maths on them, and filtering with a boolean mask. That covers a lot of everyday use, but NumPy has several more tools that come up constantly in real data work: picking specific items with a list of positions, sorting, finding duplicates, combining arrays, generating random numbers, and some simple matrix maths. In this post, you will learn:</p>
+    <ol>
+      <li>Fancy indexing, and the useful <code>where()</code> function</li>
+      <li>Sorting, finding unique values, and running totals</li>
+      <li>Joining and splitting arrays</li>
+      <li>The difference between a view and a copy</li>
+      <li>Random numbers, and a little bit of linear algebra</li>
+      <li>Handling missing values, written as <code>nan</code></li>
+    </ol>
+
+    <hr>
+
+    <h2>1. Fancy Indexing</h2>
+    <p>Besides slicing with <code>start:stop</code>, NumPy lets you pick out several positions at once, by giving it a list of positions:</p>
+    <pre><code>import numpy as np
+
+a = np.array([10, 20, 30, 40, 50])
+
+idx = [0, 2, 4]
+print(a[idx])    # [10 30 50]</code></pre>
+    <p>You can also pass a list of <code>True</code>/<code>False</code> values directly, the same idea as the boolean mask from the earlier post, just written out by hand:</p>
+    <pre><code>print(a[[True, False, True, False, True]])
+# [10 30 50]</code></pre>
+
+    <h3>1.1 where(), Choosing a Value Based on a Condition</h3>
+    <pre><code>arr = np.array([1, 2, 3, 4, 5, 6])
+
+print(np.where(arr > 3, "big", "small"))
+# ['small' 'small' 'small' 'big' 'big' 'big']</code></pre>
+    <p><code>np.where(condition, if_true, if_false)</code> checks the condition at every position, and picks one of the two values depending on the result. Used with just a condition and no values, it instead tells you <strong>where</strong> the condition was true:</p>
+    <pre><code>print(np.where(arr > 3))
+# (array([3, 4, 5]),)    , the positions where the value was bigger than 3</code></pre>
+
+    <hr>
+
+    <h2>2. Finding Specific Values</h2>
+
+    <h3>2.1 argmax() and argmin(), the Position of the Biggest or Smallest Value</h3>
+    <pre><code>marks = np.array([70, 85, 60, 95, 80])
+
+print(np.argmax(marks))    # 3, the position of the highest mark
+print(np.argmin(marks))    # 2, the position of the lowest mark
+
+print(marks[np.argmax(marks)])    # 95, the actual highest mark</code></pre>
+    <p><code>np.max()</code> gives you the value itself. <code>np.argmax()</code> gives you the <strong>position</strong> of that value, which is useful when you need to know which student, which row, or which item had the highest score.</p>
+
+    <h3>2.2 sort() and unique()</h3>
+    <pre><code>x = np.array([3, 1, 4, 1, 5, 9, 2, 6])
+
+print(np.sort(x))
+# [1 1 2 3 4 5 6 9]
+
+print(np.unique(x))
+# [1 2 3 4 5 6 9]</code></pre>
+    <p><code>np.unique()</code> also removes duplicates, similar to turning a list into a set. You can ask it to also count how many times each value appeared:</p>
+    <pre><code>vals, counts = np.unique(x, return_counts=True)
+print(vals)      # [1 2 3 4 5 6 9]
+print(counts)    # [2 1 1 1 1 1 1]</code></pre>
+    <p>Here <code>1</code> appeared twice, and every other number appeared once.</p>
+
+    <h3>2.3 Running Totals with cumsum() and cumprod()</h3>
+    <pre><code>y = np.array([1, 2, 3, 4])
+
+print(np.cumsum(y))     # [1 3 6 10]    , running total
+print(np.cumprod(y))    # [1 2 6 24]    , running product</code></pre>
+    <p><code>cumsum</code> keeps a running total as it moves through the array, <code>1</code>, then <code>1+2</code>, then <code>1+2+3</code>, and so on.</p>
+
+    <hr>
+
+    <h2>3. Combining and Splitting Arrays</h2>
+    <pre><code>a1 = np.array([1, 2, 3])
+b1 = np.array([4, 5, 6])
+
+print(np.concatenate([a1, b1]))
+# [1 2 3 4 5 6]
+
+print(np.vstack([a1, b1]))
+# [[1 2 3]
+#  [4 5 6]]
+
+print(np.hstack([a1, b1]))
+# [1 2 3 4 5 6]</code></pre>
+    <p><code>concatenate()</code> joins arrays end to end. <code>vstack()</code> stacks them as new rows, one on top of the other. <code>hstack()</code> joins them side by side.</p>
+    <pre><code>parts = np.array_split(np.arange(10), 3)
+print(parts)
+# [array([0, 1, 2, 3]), array([4, 5, 6]), array([7, 8, 9])]</code></pre>
+    <p><code>array_split()</code> breaks one array into several smaller pieces, as evenly as possible.</p>
+
+    <hr>
+
+    <h2>4. View vs Copy</h2>
+    <blockquote>Slicing a NumPy array gives you a view, which shares memory with the original. Calling .copy() gives you a completely separate array.</blockquote>
+    <pre><code>orig = np.array([1, 2, 3])
+view = orig[:]
+view[0] = 99
+
+print(orig)    # [99  2  3]   , changed too, since it shares memory!</code></pre>
+    <p>This is different from a plain Python list, and it catches a lot of people by surprise. A slice of a NumPy array is not a fresh copy, it is a window into the same data. If you need a true, independent copy, say so explicitly:</p>
+    <pre><code>copy = orig.copy()
+copy[0] = -1
+
+print(orig)    # [99  2  3]   , unaffected this time</code></pre>
+
+    <hr>
+
+    <h2>5. Broadcasting with a 2D Array</h2>
+    <p>The earlier post showed broadcasting with a single number, like <code>arr * 2</code>. It also works between a 2D array and a smaller array, as long as the shapes are compatible:</p>
+    <pre><code>m = np.array([[1, 2, 3], [4, 5, 6]])
+
+row = np.array([10, 20, 30])
+print(m + row)
+# [[11 22 33]
+#  [14 25 36]]</code></pre>
+    <p>The 1D array <code>row</code> gets applied to <strong>every row</strong> of <code>m</code>. This works because its length, 3, matches the number of columns in <code>m</code>.</p>
+    <pre><code>col = np.array([[100], [200]])
+print(m + col)
+# [[101 102 103]
+#  [204 205 206]]</code></pre>
+    <p>Here <code>col</code> has one value per row, 2 rows, so it gets applied down <strong>every column</strong> instead. Broadcasting saves you from writing a loop whenever the shapes line up this way.</p>
+
+    <hr>
+
+    <h2>6. Random Numbers</h2>
+    <pre><code>np.random.seed(0)      # makes the random numbers repeatable
+
+print(np.random.rand(3))
+# [0.5488135  0.71518937 0.60276338]   , 3 random numbers between 0 and 1
+
+print(np.random.randint(1, 10, 5))
+# [4 8 4 6 3]   , 5 random whole numbers from 1 up to (not including) 10</code></pre>
+    <p><code>np.random.seed()</code> is worth remembering, calling it with the same number before generating random values makes the "random" output repeatable, useful whenever you need to share results that others can reproduce exactly.</p>
+
+    <hr>
+
+    <h2>7. Flattening an Array: ravel() and flatten()</h2>
+    <p>Sometimes you have a 2D array and you just want all its values back as one flat, 1D array:</p>
+    <pre><code>m = np.array([[1, 2, 3], [4, 5, 6]])
+
+print(m.flatten())    # [1 2 3 4 5 6]
+print(m.ravel())       # [1 2 3 4 5 6]</code></pre>
+    <p>Both give you the same flat result, but they behave differently underneath, in the same way slicing and <code>.copy()</code> did earlier. <code>.flatten()</code> always gives you a brand new, independent array:</p>
+    <pre><code>flat_copy = m.flatten()
+flat_copy[0] = 99
+
+print(m)
+# [[1 2 3]
+#  [4 5 6]]    , unchanged</code></pre>
+    <p><code>.ravel()</code> gives you a view where possible, sharing memory with the original, so changing it can change the original array too:</p>
+    <pre><code>flat_view = m.ravel()
+flat_view[0] = 99
+
+print(m)
+# [[99  2  3]
+#  [ 4  5  6]]    , changed!</code></pre>
+    <p>A simple rule: use <code>.flatten()</code> when you want a safe, independent copy, and <code>.ravel()</code> when you only need a quick, read-only flat view and want to avoid the small extra cost of copying.</p>
+
+    <h2>8. A Little Linear Algebra</h2>
+    <pre><code>A = np.array([[1, 2], [3, 4]])
+B = np.array([[5, 6], [7, 8]])
+
+print(A @ B)
+# [[19 22]
+#  [43 50]]</code></pre>
+    <p><code>@</code> performs real matrix multiplication between two 2D arrays, not the position-by-position multiplication that <code>*</code> does.</p>
+    <pre><code>print(np.linalg.inv(A))
+# [[-2.   1. ]
+#  [ 1.5 -0.5]]
+
+print(np.linalg.det(A))
+# -2.0000000000000004</code></pre>
+    <p><code>np.linalg.inv()</code> finds the inverse of a matrix, and <code>np.linalg.det()</code> finds its determinant. You do not need to know linear algebra deeply to follow this series, but these two functions come up often enough in machine learning that it helps to recognise them.</p>
+
+    <hr>
+
+    <h2>9. Handling Missing Values (nan)</h2>
+    <p>Real data is often incomplete. NumPy represents a missing number as <code>np.nan</code>, short for "not a number":</p>
+    <pre><code>d = np.array([1, 2, np.nan, 4])
+
+print(np.isnan(d))
+# [False False  True False]</code></pre>
+    <p>A normal <code>np.mean()</code> would be confused by a <code>nan</code> in the data. Use the <code>nan</code>-aware versions instead, which simply skip over them:</p>
+    <pre><code>print(np.nanmean(d))    # 2.3333333333333335</code></pre>
+    <p>Or replace every <code>nan</code> with a real number of your choosing:</p>
+    <pre><code>print(np.nan_to_num(d, nan=0))
+# [1. 2. 0. 4.]</code></pre>
+
+    <hr>
+
+    <h2>10. Comparing Whole Arrays</h2>
+    <pre><code>print(np.array([1, 2, 3]) == np.array([1, 5, 3]))
+# [ True False  True]    , compared position by position
+
+print(np.array_equal(np.array([1, 2, 3]), np.array([1, 2, 3])))
+# True    , one single True/False for the whole array</code></pre>
+    <p>Plain <code>==</code> gives you a result for every position. <code>np.array_equal()</code> instead answers one simple question: are these two arrays exactly the same, as a whole?</p>
+
+    <hr>
+
+    <h2>11. Applying Your Own Function to Every Value</h2>
+    <pre><code>def classify(m):
+    return "pass" if m >= 50 else "fail"
+
+vclassify = np.vectorize(classify)
+print(vclassify(np.array([30, 60, 45, 80])))
+# ['fail' 'pass' 'fail' 'pass']</code></pre>
+    <p><code>np.vectorize()</code> takes a normal Python function, one built for a single value, and lets you apply it to every value in an array at once, without writing a loop yourself.</p>
+
+    <hr>
+
+    <h2>12. Checking a Whole Array at Once</h2>
+    <pre><code>print(np.all(np.array([True, True, False])))    # False, not every value is True
+print(np.any(np.array([False, False, True])))    # True, at least one value is True</code></pre>
+    <p><code>np.all()</code> checks whether <strong>every</strong> value is true, and <code>np.any()</code> checks whether <strong>at least one</strong> is. Combined with a condition, this is a quick way to answer questions like "did everyone pass?" or "did anyone fail?"</p>
+    <pre><code>marks = np.array([85, 92, 78, 65, 90])
+print(np.all(marks >= 60))    # True, every student passed</code></pre>
+
+    <hr>
+
+    <h2>Common Mistakes</h2>
+    <table>
+      <tr><th>Mistake</th><th>What happens</th><th>Fix</th></tr>
+      <tr><td>Changing a slice and expecting the original array to stay the same</td><td>The original changes too, since a slice is a view</td><td>Use <code>.copy()</code> when you need an independent array</td></tr>
+      <tr><td>Using regular <code>np.mean()</code> on data with missing values</td><td>The result comes back as <code>nan</code></td><td>Use <code>np.nanmean()</code> instead</td></tr>
+      <tr><td>Using <code>*</code> when you meant real matrix multiplication</td><td>You get position-by-position multiplication instead</td><td>Use <code>@</code>, or <code>np.dot()</code>, for matrix multiplication</td></tr>
+      <tr><td>Forgetting <code>np.random.seed()</code> when results need to be repeatable</td><td>Random numbers are different every time the code runs</td><td>Call <code>np.random.seed(some_number)</code> before generating random values</td></tr>
+      <tr><td>Changing a <code>.ravel()</code> result and expecting the original to stay the same</td><td>The original array can change too, since <code>.ravel()</code> usually returns a view</td><td>Use <code>.flatten()</code> if you need a safe, independent copy</td></tr>
+    </table>
+
+    <hr>
+
+    <h2>Quick Recap</h2>
+    <table>
+      <tr><th>You need</th><th>Use</th></tr>
+      <tr><td>To pick out several specific positions at once</td><td>fancy indexing, <code>arr[[0, 2, 4]]</code></td></tr>
+      <tr><td>To choose a value based on a condition, for every position</td><td><code>np.where()</code></td></tr>
+      <tr><td>The position of the highest or lowest value</td><td><code>np.argmax()</code>, <code>np.argmin()</code></td></tr>
+      <tr><td>To remove duplicates from an array</td><td><code>np.unique()</code></td></tr>
+      <tr><td>To join arrays together</td><td><code>np.concatenate()</code>, <code>np.vstack()</code>, <code>np.hstack()</code></td></tr>
+      <tr><td>A fully independent copy of an array</td><td><code>.copy()</code></td></tr>
+      <tr><td>Repeatable random numbers</td><td><code>np.random.seed()</code></td></tr>
+      <tr><td>A flat, 1D version of a 2D array</td><td><code>.flatten()</code> (safe copy) or <code>.ravel()</code> (fast view)</td></tr>
+      <tr><td>Real matrix multiplication</td><td><code>@</code> or <code>np.dot()</code></td></tr>
+      <tr><td>To check if every, or any, value meets a condition</td><td><code>np.all()</code>, <code>np.any()</code></td></tr>
+    </table>
+    <p>Between this post and the earlier one, you now have a solid, practical toolkit for working with numbers in NumPy. This same toolkit, arrays, boolean masks, and vectorized operations, is exactly what you will see again once we start working with pandas.</p>
+
+    <hr>
+
+    <h2>Practice Questions</h2>
+    <ol>
+      <li>What is the difference between <code>np.max()</code> and <code>np.argmax()</code>?</li>
+      <li>Why does changing a slice of a NumPy array sometimes change the original array too?</li>
+      <li>What does <code>np.unique(x, return_counts=True)</code> give you back?</li>
+      <li>What is the difference between <code>*</code> and <code>@</code> on two 2D arrays?</li>
+      <li>Why might <code>np.mean()</code> give you <code>nan</code> as a result, and what would you use instead?</li>
+      <li>What is the main difference between <code>.flatten()</code> and <code>.ravel()</code>?</li>
+    </ol>
+    <h4>Answers</h4>
+    <ol>
+      <li><code>np.max()</code> gives the highest value itself. <code>np.argmax()</code> gives the position of that value inside the array.</li>
+      <li>A slice is a view, not a separate copy, it shares the same underlying memory as the original array.</li>
+      <li>The unique values, and how many times each one appeared.</li>
+      <li><code>*</code> multiplies position by position. <code>@</code> performs real matrix multiplication.</li>
+      <li>If the array contains a missing value (<code>nan</code>), a normal mean becomes <code>nan</code> too. Use <code>np.nanmean()</code>, which skips missing values.</li>
+      <li><code>.flatten()</code> always returns a new, independent array. <code>.ravel()</code> returns a view where possible, so changing it can change the original array too.</li>
+    </ol>
+
+  </article>
+
+  <footer>
+    <div>© 2026 notebook. · articles added regularly</div>
+    <div>
+      <a href="../index.html">Home</a>
+    </div>
+  </footer>
+</div>
+
+</body>
+</html>
