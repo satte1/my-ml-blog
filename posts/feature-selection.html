@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Feature Selection — notebook.</title>
-<meta name="description" content="What feature selection means, why some columns hurt your model, and a full walkthrough of Filter Method (ANOVA and Chi-Square) with Python code.">
+<meta name="description" content="What feature selection means, why some columns hurt your model, and a full walkthrough of Filter Method (ANOVA, Chi-Square) and Wrapper Method (RFE) with Python code.">
 <meta name="author" content="Satyam">
 <link rel="icon" type="image/svg+xml" href="../favicon.svg">
 <link rel="canonical" href="https://learnwithsatyam.com/posts/feature-selection.html">
@@ -12,11 +12,11 @@
 <meta property="og:type" content="article">
 <meta property="og:url" content="https://learnwithsatyam.com/posts/feature-selection.html">
 <meta property="og:title" content="Feature Selection — notebook.">
-<meta property="og:description" content="What feature selection means, why some columns hurt your model, and a walkthrough of ANOVA and Chi-Square with pandas and sklearn.">
+<meta property="og:description" content="What feature selection means, why some columns hurt your model, and a full walkthrough of Filter Method (ANOVA, Chi-Square) and Wrapper Method (RFE) with Python code.">
 <!-- Twitter Card -->
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="Feature Selection — notebook.">
-<meta name="twitter:description" content="What feature selection means, why some columns hurt your model, and a walkthrough of ANOVA and Chi-Square with pandas and sklearn.">
+<meta name="twitter:description" content="What feature selection means, why some columns hurt your model, and a full walkthrough of Filter Method (ANOVA, Chi-Square) and Wrapper Method (RFE) with Python code.">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,500;0,9..144,600;1,9..144,500&family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans:wght@400;500;600&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="../style.css">
@@ -76,7 +76,7 @@
       <li>Wrapper Method</li>
       <li>Embedded Method</li>
     </ol>
-    <p>In this post, we will start with <strong>Filter Method</strong> in detail. Wrapper Method and Embedded Method are covered in the sections below (full detail coming in the next posts).</p>
+    <p>In this post, we explore both the <strong>Filter Method</strong> and the <strong>Wrapper Method</strong> in detail. The Embedded Method is introduced below (with a full walkthrough coming in the next post).</p>
 
     <hr>
 
@@ -261,7 +261,78 @@ print("p-value:", p_value)</code></pre>
     <hr>
 
     <h2>2. Wrapper Method</h2>
-    <p><em>(Coming in the next post — full explanation with examples.)</em></p>
+    <p>In the Filter Method, we judged each column using pure statistics without touching a Machine Learning model.</p>
+    <p><strong>Wrapper Method works differently:</strong> It actually trains an actual Machine Learning model on different combinations of features, checks the accuracy score, and picks the combination that gives the best results.</p>
+    
+    <blockquote>
+      <strong>Think of it like a sports team tryout:</strong><br>
+      • <strong>Filter Method</strong> was checking player height and weight on paper before inviting them to practice.<br>
+      • <strong>Wrapper Method</strong> is putting players together on the field in practice matches to see which combination actually wins games.
+    </blockquote>
+
+    <p>Because it uses a real model to evaluate features, it discovers something Filter Method cannot: <strong>feature interaction</strong>. Two columns might look weak on their own, but when combined together, they might give the model huge predictive power.</p>
+
+    <h3>The 3 Common Wrapper Techniques</h3>
+    <ol>
+      <li><strong>Forward Feature Selection (Start empty, add one by one)</strong><br>
+      Start with 0 features. Try each feature individually, pick the best one. Then test remaining features paired with your first pick. Repeat until adding more features stops improving accuracy.</li>
+      <li><strong>Backward Elimination (Start with all, remove one by one)</strong><br>
+      Start with all features and train the model. Identify the weakest feature that hurts or doesn't help the score, and drop it. Repeat until removing any more features hurts performance.</li>
+      <li><strong>Recursive Feature Elimination (RFE)</strong><br>
+      The most popular industry-standard version of Backward Elimination in <code>scikit-learn</code>. It trains the model, checks feature weights or coefficients, prunes the weakest features, and repeats until it reaches the exact number of top features you requested.</li>
+    </ol>
+
+    <h3>Step-by-Step Example with Python (RFE)</h3>
+    <p>Suppose we are predicting whether a student passes an exam. We have useful columns (<code>Study_Hours</code>, <code>Past_Score</code>, <code>Attendance_Pct</code>) and random noise columns (<code>Lucky_Shirt_Color</code>, <code>Birth_Day_Number</code>). Let's see how RFE finds the top 3 features:</p>
+
+    <pre><code>import pandas as pd
+from sklearn.linear_model import LogisticRegression
+from sklearn.feature_selection import RFE
+
+# Step 1: Create a simple dataset
+data = {
+    'Study_Hours':       [2, 5, 8, 1, 6, 9, 3, 7],
+    'Past_Score':        [45, 70, 88, 40, 75, 92, 50, 80],
+    'Attendance_Pct':    [60, 85, 95, 50, 90, 98, 65, 88],
+    'Lucky_Shirt_Color': [1, 3, 2, 1, 3, 2, 1, 2],       # noise
+    'Birth_Day_Number':  [14, 2, 29, 18, 5, 23, 11, 7],   # noise
+    'Passed':            [0, 1, 1, 0, 1, 1, 0, 1]
+}
+df = pd.DataFrame(data)
+
+X = df.drop(columns=['Passed'])
+y = df['Passed']
+
+# Step 2: Choose the base model
+model = LogisticRegression()
+
+# Step 3: Set up RFE to pick the top 3 features
+rfe = RFE(estimator=model, n_features_to_select=3)
+rfe.fit(X, y)
+
+# Step 4: View selected features and their rankings
+results = pd.DataFrame({
+    'Feature': X.columns,
+    'Selected': rfe.support_,     # True if kept, False if dropped
+    'Rank': rfe.ranking_          # 1 means top selected feature
+})
+
+print(results.sort_values(by='Rank'))</code></pre>
+
+    <p><strong>How to read the result:</strong></p>
+    <ul>
+      <li><code>rfe.support_</code> returns <code>True</code> for the columns that made the cut.</li>
+      <li><code>rfe.ranking_</code> gives Rank <code>1</code> to all chosen features. Dropped features get Rank 2, 3, etc. based on how early they were eliminated.</li>
+    </ul>
+
+    <h3>Filter vs Wrapper Method: Quick Comparison</h3>
+    <table>
+      <tr><th>Property</th><th>Filter Method</th><th>Wrapper Method</th></tr>
+      <tr><td><strong>How it evaluates</strong></td><td>Statistical test on each column separately</td><td>Trains an ML model on subsets of columns</td></tr>
+      <tr><td><strong>Speed</strong></td><td>⚡ Very fast (seconds)</td><td>⏳ Slower (trains model many times)</td></tr>
+      <tr><td><strong>Feature Interaction</strong></td><td>❌ Misses interactions between columns</td><td>✅ Captures how columns work together</td></tr>
+      <tr><td><strong>When to use</strong></td><td>Initial cleanup on large datasets with many columns</td><td>Fine-tuning a smaller set of candidate features</td></tr>
+    </table>
 
     <hr>
 
