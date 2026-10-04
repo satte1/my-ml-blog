@@ -4,6 +4,19 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Variables and Data Types — notebook.</title>
+<meta name="description" content="Learn what variables are, dynamic typing, core Python data types, safe type conversion, common pitfalls, and practice questions.">
+<meta name="author" content="Mukesh">
+<link rel="icon" type="image/svg+xml" href="../favicon.svg">
+<link rel="canonical" href="https://learnwithsatyam.com/posts/variables-data-types.html">
+<!-- Open Graph -->
+<meta property="og:type" content="article">
+<meta property="og:url" content="https://learnwithsatyam.com/posts/variables-data-types.html">
+<meta property="og:title" content="Variables and Data Types — notebook.">
+<meta property="og:description" content="What variables are, how dynamic typing works, the four core data types, safe type conversion, and common mistakes in Python.">
+<!-- Twitter Card -->
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="Variables and Data Types — notebook.">
+<meta name="twitter:description" content="What variables are, how dynamic typing works, the four core data types, safe type conversion, and common mistakes in Python.">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,500;0,9..144,600;1,9..144,500&family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans:wght@400;500;600&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="../style.css">
@@ -503,15 +516,25 @@ print(average)                  # 80.0</code></pre>
       <li>Which is correct for the text <code>"12.75"</code> — <code>int()</code> or <code>float()</code>?</li>
     </ol>
 
-    <h4>Answers</h4>
-    <ol>
-      <li><code>float</code> — the result is <code>7.0</code>, because Python converts the <code>int</code> to <code>float</code> automatically.</li>
-      <li><code>"777"</code> — text is repeated, not multiplied.</li>
-      <li><code>8</code> — <code>int()</code> cuts off the decimal part.</li>
-      <li><code>True</code> — it is a non-empty text.</li>
-      <li>Python cannot join text and a number. Fix: <code>"Total: " + str(50)</code> or <code>f"Total: {50}"</code>.</li>
-      <li><code>float()</code> — because the text has a decimal point.</li>
-    </ol>
+    <details class="answers-box">
+      <summary>Click to reveal answers</summary>
+      <ol>
+        <li><code>float</code> — the result is <code>7.0</code>, because Python converts the <code>int</code> to <code>float</code> automatically.</li>
+        <li><code>"777"</code> — text is repeated, not multiplied.</li>
+        <li><code>8</code> — <code>int()</code> cuts off the decimal part.</li>
+        <li><code>True</code> — it is a non-empty text.</li>
+        <li>Python cannot join text and a number. Fix: <code>"Total: " + str(50)</code> or <code>f"Total: {50}"</code>.</li>
+        <li><code>float()</code> — because the text has a decimal point.</li>
+      </ol>
+    </details>
+
+    <nav class="post-nav">
+      <div></div>
+      <a href="loops-and-conditions.html" class="post-nav-card" style="text-align: right;">
+        <span class="nav-label">Next in Python →</span>
+        <h4 class="nav-title">Loops and Conditions: for, while, if</h4>
+      </a>
+    </nav>
 
   </article>
 
@@ -523,5 +546,8 @@ print(average)                  # 80.0</code></pre>
   </footer>
 </div>
 
+<script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-python.min.js"></script>
+<script src="../post.js"></script>
 </body>
 </html>

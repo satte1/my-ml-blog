@@ -3,7 +3,20 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Loops and Conditions: notebook.</title>
+<title>Loops and Conditions: for, while, if — notebook.</title>
+<meta name="description" content="Learn Python decision making and repetition: if, elif, else, for and while loops, break, continue, common mistakes, and practice questions.">
+<meta name="author" content="Mukesh">
+<link rel="icon" type="image/svg+xml" href="../favicon.svg">
+<link rel="canonical" href="https://learnwithsatyam.com/posts/loops-and-conditions.html">
+<!-- Open Graph -->
+<meta property="og:type" content="article">
+<meta property="og:url" content="https://learnwithsatyam.com/posts/loops-and-conditions.html">
+<meta property="og:title" content="Loops and Conditions: for, while, if — notebook.">
+<meta property="og:description" content="How to make decisions with if/elif/else, repeat actions with for and while, control loops with break and continue, and avoid common beginner bugs.">
+<!-- Twitter Card -->
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="Loops and Conditions: for, while, if — notebook.">
+<meta name="twitter:description" content="How to make decisions with if/elif/else, repeat actions with for and while, control loops with break and continue, and avoid common beginner bugs.">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,500;0,9..144,600;1,9..144,500&family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans:wght@400;500;600&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="../style.css">
@@ -36,7 +49,7 @@
   <article class="article-body">
 
     <h2>Why This Topic Matters</h2>
-    <p>So far we have learned how to store data with <a href="python-variables-data-types-conversion.html">variables</a> and group it with collections. But a program is not just data sitting there. It needs to <strong>make decisions</strong> and <strong>repeat actions</strong>. That is exactly what <code>if</code>, <code>for</code> and <code>while</code> do.</p>
+    <p>So far we have learned how to store data with <a href="variables-data-types.html">variables</a> and group it with collections. But a program is not just data sitting there. It needs to <strong>make decisions</strong> and <strong>repeat actions</strong>. That is exactly what <code>if</code>, <code>for</code> and <code>while</code> do.</p>
     <p>By the end of this post you will know:</p>
     <ol>
       <li>How to make decisions in code with <code>if</code>, <code>elif</code> and <code>else</code></li>
@@ -371,14 +384,24 @@ else:
       <li>Does the loop <code>else</code> run if the loop finishes normally, with no <code>break</code>?</li>
     </ol>
 
-    <h4>Answers</h4>
-    <ol>
-      <li><code>3, 6, 9</code>, since it starts at 3, stops before 12, and steps by 3.</li>
-      <li><code>break</code> stops the loop completely. <code>continue</code> skips only the current round and moves to the next one.</li>
-      <li><code>n &gt;= 10 and n &lt;= 20</code></li>
-      <li>It repeats forever with no way to stop, freezing the program, unless something inside eventually calls <code>break</code>.</li>
-      <li>Yes, the loop <code>else</code> runs whenever the loop completes without hitting a <code>break</code>.</li>
-    </ol>
+    <details class="answers-box">
+      <summary>Click to reveal answers</summary>
+      <ol>
+        <li><code>3, 6, 9</code>, since it starts at 3, stops before 12, and steps by 3.</li>
+        <li><code>break</code> stops the loop completely. <code>continue</code> skips only the current round and moves to the next one.</li>
+        <li><code>n &gt;= 10 and n &lt;= 20</code></li>
+        <li>It repeats forever with no way to stop, freezing the program, unless something inside eventually calls <code>break</code>.</li>
+        <li>Yes, the loop <code>else</code> runs whenever the loop completes without hitting a <code>break</code>.</li>
+      </ol>
+    </details>
+
+    <nav class="post-nav">
+      <a href="variables-data-types.html" class="post-nav-card">
+        <span class="nav-label">← Previous in Python</span>
+        <h4 class="nav-title">Variables and Data Types</h4>
+      </a>
+      <div></div>
+    </nav>
 
   </article>
 
@@ -390,5 +413,8 @@ else:
   </footer>
 </div>
 
+<script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-python.min.js"></script>
+<script src="../post.js"></script>
 </body>
 </html>
