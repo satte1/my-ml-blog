@@ -1,0 +1,527 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Variables and Data Types — notebook.</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,500;0,9..144,600;1,9..144,500&family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans:wght@400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../style.css">
+</head>
+<body>
+
+<div class="wrap">
+  <header>
+    <div class="nav-row">
+      <div class="brand">notebook.</div>
+      <nav>
+        <a href="../index.html#topics">Topics</a>
+        <a href="../index.html#about">About</a>
+        <a href="../index.html#courses">Courses</a>
+        <a href="../index.html#book" class="cta">Book a Call</a>
+      </nav>
+    </div>
+  </header>
+
+  <div class="article-header">
+    <a href="../index.html#topics" class="back-link">← Back to all articles</a>
+    <div class="article-meta">
+      <span>SEP 2026</span>
+      <span>By Mukesh</span>
+      <span class="tag">Python</span>
+    </div>
+    <h1>Variables and Data Types</h1>
+  </div>
+
+  <article class="article-body">
+
+    <h2>Why This Topic Matters</h2>
+    <p>Every Python program — from a small calculator to a full machine learning model — does one basic job: it <strong>stores some information, and then does something with it</strong>. To store information we use <strong>variables</strong>. To use that information correctly, we must understand its <strong>data type</strong>.</p>
+    <p>Most beginner errors in Python come from mixing up these two ideas. In this post we will learn:</p>
+    <ol>
+      <li>What variables are, and how to use them</li>
+      <li>What data types are, and the main types in Python</li>
+      <li>Why <code>"25"</code> and <code>25</code> are different</li>
+      <li>What type conversion is, and how to do it safely</li>
+    </ol>
+    <p>Every idea comes with a small example. Type the examples yourself in Python — it is the fastest way to learn.</p>
+
+    <hr>
+
+    <h2>1. Variables</h2>
+
+    <h3>1.1 What is a Variable?</h3>
+    <p>When we write a program, we need a place to keep information — like a person's age, a name, or the price of a product. That place is called a <strong>variable</strong>.</p>
+    <blockquote>A variable is just a name that points to a value stored in the computer's memory.</blockquote>
+    <p>Think of a variable like a <strong>name tag on a box</strong>. The box holds the value, and the name tag lets you find it again whenever you need it.</p>
+
+    <h4>Simple Example</h4>
+    <pre><code>age = 25
+name = "Satyam"
+price = 499.99
+
+print(age)     # 25
+print(name)    # Satyam
+print(price)   # 499.99</code></pre>
+    <p>Here <code>age</code>, <code>name</code> and <code>price</code> are variables. The <code>=</code> sign does not mean "equal to" like in maths. It means <strong>"store this value in this name"</strong>. This is called <strong>assignment</strong>.</p>
+    <p>Notice one more thing: we never told Python what <em>kind</em> of value each variable holds. Python looks at the value and understands it on its own. This is called <strong>dynamic typing</strong>.</p>
+
+    <h3>1.2 Changing the Value of a Variable</h3>
+    <p>A variable can be given a new value at any time. The old value is simply forgotten.</p>
+    <pre><code>score = 10
+print(score)    # 10
+
+score = 20
+print(score)    # 20</code></pre>
+    <p>Because Python uses dynamic typing, a variable can even change its <strong>type</strong>:</p>
+    <pre><code>data = 100        # int
+data = "hello"    # now it is a str
+print(data)       # hello</code></pre>
+    <p>Python allows this, but it is a <strong>bad habit</strong>. If one name holds a number in one line and text in another, your code becomes confusing and full of type errors. Keep one variable for one kind of value.</p>
+
+    <h3>1.3 Assigning Many Variables at Once</h3>
+    <p>Python gives some short ways to assign values:</p>
+    <pre><code># Same value to many variables
+a = b = c = 0
+print(a, b, c)                # 0 0 0
+
+# Different values in one line
+name, age, city = "Satyam", 25, "Jaipur"
+print(name, age, city)        # Satyam 25 Jaipur
+
+# Swapping two variables
+a, b = 1, 2
+a, b = b, a
+print(a, b)                   # 2 1</code></pre>
+
+    <h3>1.4 Rules for Naming a Variable</h3>
+    <p>Python is strict about variable names. These are the rules:</p>
+    <ul>
+      <li>Use only letters, numbers and underscore (<code>_</code>)</li>
+      <li>Do <strong>not</strong> start the name with a number — <code>1age</code> is wrong, <code>age1</code> is fine</li>
+      <li>Do <strong>not</strong> use spaces — write <code>total_marks</code>, not <code>total marks</code></li>
+      <li>Names are <strong>case-sensitive</strong> — <code>Age</code> and <code>age</code> are two different variables</li>
+      <li>Do <strong>not</strong> use Python's reserved words like <code>if</code>, <code>for</code>, <code>class</code>, <code>True</code></li>
+    </ul>
+    <table>
+      <tr><th>Name</th><th>Valid?</th><th>Reason</th></tr>
+      <tr><td><code>student_age</code></td><td>Yes</td><td>Letters and underscore</td></tr>
+      <tr><td><code>marks2</code></td><td>Yes</td><td>Number is not at the start</td></tr>
+      <tr><td><code>2marks</code></td><td>No</td><td>Starts with a number</td></tr>
+      <tr><td><code>total marks</code></td><td>No</td><td>Has a space</td></tr>
+      <tr><td><code>for</code></td><td>No</td><td>Reserved word</td></tr>
+    </table>
+
+    <h4>Good naming habits</h4>
+    <ul>
+      <li>Use <strong>clear names</strong>: <code>student_age</code> is better than <code>x</code></li>
+      <li>Use <strong>lowercase with underscores</strong> (called snake_case): <code>total_price</code></li>
+      <li>For a value that should never change, many programmers write the name in <strong>capital letters</strong>, like <code>PI = 3.14159</code>. Python will not stop you from changing it, but it tells other people "do not touch this".</li>
+    </ul>
+
+    <hr>
+
+    <h2>2. Data Types</h2>
+
+    <h3>2.1 What is a Data Type?</h3>
+    <p>Every value in Python has a <strong>data type</strong>. The data type tells Python <strong>what kind of value it is</strong>, and what you are allowed to do with it.</p>
+    <p>For example, you can multiply two numbers, but it makes no sense to multiply two names. The data type is how Python knows the difference.</p>
+    <p>There are <strong>4 basic data types</strong> that you will use almost every day:</p>
+    <table>
+      <tr><th>Type</th><th>Meaning</th><th>Example</th></tr>
+      <tr><td><code>int</code></td><td>Whole numbers (no decimal point)</td><td>25, -3, 1000</td></tr>
+      <tr><td><code>float</code></td><td>Decimal numbers</td><td>3.14, 499.99</td></tr>
+      <tr><td><code>str</code></td><td>Text (always inside quotes)</td><td>"Satyam", "Jaipur"</td></tr>
+      <tr><td><code>bool</code></td><td>Only two values — Yes or No</td><td>True, False</td></tr>
+    </table>
+
+    <h3>2.2 Checking the Data Type</h3>
+    <p>Use the built-in <code>type()</code> function. It tells you the type of any value or variable.</p>
+    <pre><code>age = 25
+price = 499.99
+name = "Satyam"
+is_active = True
+
+print(type(age))        # &lt;class 'int'&gt;
+print(type(price))      # &lt;class 'float'&gt;
+print(type(name))       # &lt;class 'str'&gt;
+print(type(is_active))  # &lt;class 'bool'&gt;</code></pre>
+    <p>If you only want a quick <strong>yes/no answer</strong>, use <code>isinstance()</code>:</p>
+    <pre><code>print(isinstance(25, int))        # True
+print(isinstance("25", int))      # False
+print(isinstance(25.0, (int, float)))   # True — checks for int OR float</code></pre>
+
+    <h3>2.3 <code>int</code> — Whole Numbers</h3>
+    <p>An <code>int</code> is a number without a decimal point. It can be positive, negative, or zero. There is no size limit in Python — you can store very big numbers.</p>
+    <pre><code>students = 40
+temperature = -5
+population = 1_000_000     # underscores make big numbers easy to read
+
+print(population)          # 1000000
+print(type(10 ** 30))      # &lt;class 'int'&gt;</code></pre>
+
+    <h3>2.4 <code>float</code> — Decimal Numbers</h3>
+    <p>A <code>float</code> is a number with a decimal point. Use it for prices, heights, percentages, and so on.</p>
+    <pre><code>height = 5.9
+percentage = 87.5
+
+print(7 / 2)              # 3.5
+print(type(7 / 2))        # &lt;class 'float'&gt;
+print(type(6 / 2))        # &lt;class 'float'&gt; — division ALWAYS gives a float
+print(7 // 2)             # 3   — floor division gives an int</code></pre>
+    <p><strong>A small surprise about floats:</strong> computers store decimals in a way that is not always exact.</p>
+    <pre><code>print(0.1 + 0.2)              # 0.30000000000000004
+print(round(0.1 + 0.2, 2))    # 0.3</code></pre>
+    <p>This is normal and happens in every programming language. When you show a result to a user, use <code>round()</code> to keep only the digits you need.</p>
+
+    <h3>2.5 <code>str</code> — Text</h3>
+    <p>A <code>str</code> (string) is any text written inside quotes. You can use single quotes or double quotes — both are the same.</p>
+    <pre><code>city = "Jaipur"
+greeting = 'Hello'
+message = "It's a nice day"     # double quotes let us use ' inside</code></pre>
+    <p>Some useful things you can do with a string:</p>
+    <pre><code>s = "Python"
+
+print(len(s))          # 6       — number of characters
+print(s[0])            # P       — first character
+print(s[-1])           # n       — last character
+print(s.upper())       # PYTHON
+print("Py" + "thon")   # Python  — joining strings
+print("ha" * 3)        # hahaha  — repeating a string</code></pre>
+    <p>To put variables inside a sentence, the easiest way is an <strong>f-string</strong> (put <code>f</code> before the quotes, and write variables inside <code>{ }</code>):</p>
+    <pre><code>name = "Satyam"
+age = 25
+print(f"My name is {name} and I am {age} years old.")
+# My name is Satyam and I am 25 years old.</code></pre>
+    <p>Notice that the f-string did not need any conversion — it changes the number to text for us. Keep this trick in mind, we will use it again later.</p>
+
+    <h3>2.6 <code>bool</code> — True or False</h3>
+    <p>A <code>bool</code> (boolean) has only two possible values: <code>True</code> and <code>False</code>. The first letter must be a capital — <code>true</code> in small letters is an error.</p>
+    <p>Booleans are mostly created by <strong>comparisons</strong>:</p>
+    <pre><code>print(10 &gt; 5)       # True
+print(10 == 5)      # False   (== means "is equal to?")
+print(type(10 &gt; 5)) # &lt;class 'bool'&gt;</code></pre>
+    <p>We use booleans to make decisions, for example in <code>if</code> statements.</p>
+
+    <h3>2.7 <code>None</code> — No Value</h3>
+    <p><code>None</code> is a special value that means <strong>"nothing is here"</strong>. It has its own type, called <code>NoneType</code>.</p>
+    <pre><code>result = None
+print(result)         # None
+print(type(result))   # &lt;class 'NoneType'&gt;</code></pre>
+    <p>It is useful when a variable must exist, but we do not have a value for it yet.</p>
+
+    <h3>2.8 Other Data Types (a quick look)</h3>
+    <p>Apart from the 4 basic types, Python has types that hold <strong>many values together</strong>. We will study them in separate posts, but you should know their names:</p>
+    <table>
+      <tr><th>Type</th><th>Example</th><th>What it is</th></tr>
+      <tr><td><code>list</code></td><td>[10, 20, 30]</td><td>Ordered collection, can be changed</td></tr>
+      <tr><td><code>tuple</code></td><td>(10, 20, 30)</td><td>Ordered collection, cannot be changed</td></tr>
+      <tr><td><code>set</code></td><td>{10, 20, 30}</td><td>Collection with no duplicates</td></tr>
+      <tr><td><code>dict</code></td><td>{"name": "Satyam"}</td><td>Pairs of key and value</td></tr>
+    </table>
+
+    <hr>
+
+    <h2>3. The Problem: "25" is not the same as 25</h2>
+    <p>Look at these two lines:</p>
+    <pre><code>a = 25      # int  (a number)
+b = "25"    # str  (text)</code></pre>
+    <p>On the screen they look almost the same. But for Python they are <strong>completely different things</strong>. See what happens when we use the <code>*</code> and <code>+</code> signs on both:</p>
+    <pre><code>print(25 * 3)     # 75
+print("25" * 3)   # 252525
+
+print(5 + 5)      # 10
+print("5" + "5")  # 55</code></pre>
+    <p>With numbers, Python does <strong>maths</strong>. With text, Python just <strong>joins or repeats</strong> the characters. Same look, very different result!</p>
+    <p>Also remember that they are never equal to each other:</p>
+    <pre><code>print("3" == 3)   # False
+print(3 == 3.0)   # True  — int and float with the same value are equal</code></pre>
+
+    <h3>3.1 The Error Every Beginner Sees</h3>
+    <p>Now let's try to add a number to a piece of text:</p>
+    <pre><code>age = "25"
+print(age + 5)</code></pre>
+    <p>Python gives an error:</p>
+    <pre><code>TypeError: can only concatenate str (not "int") to str</code></pre>
+    <p><strong>Why?</strong> Python does not know what you want. Should it add the numbers (25 + 5 = 30)? Or join the texts ("25" + "5" = "255")? Since it cannot decide, it stops and shows an error.</p>
+    <p>This happens very often in real work, because data coming from a <strong>form, a file, a website, or the <code>input()</code> function</strong> almost always arrives as <code>str</code>, even when it looks like a number.</p>
+    <p>The solution is <strong>Type Conversion</strong>.</p>
+
+    <hr>
+
+    <h2>4. Type Conversion</h2>
+    <p>Type Conversion (also called <strong>Type Casting</strong>) means:</p>
+    <blockquote>Changing a value from one data type to another data type.</blockquote>
+    <p>There are <strong>2 kinds</strong> of type conversion:</p>
+    <ol>
+      <li>Implicit Conversion — Python does it automatically</li>
+      <li>Explicit Conversion — you do it yourself</li>
+    </ol>
+
+    <hr>
+
+    <h3>4.1 Implicit Conversion (automatic)</h3>
+
+    <h4>What is it?</h4>
+    <p>Sometimes Python changes the type for you, without being asked. It does this only when it is <strong>safe</strong> and no information will be lost.</p>
+
+    <h4>Small Example</h4>
+    <pre><code>x = 5        # int
+y = 2.5      # float
+
+result = x + y
+print(result)          # 7.5
+print(type(result))    # &lt;class 'float'&gt;</code></pre>
+    <p>We added an <code>int</code> and a <code>float</code>. Python quietly changed <code>5</code> into <code>5.0</code> and gave us a <code>float</code> answer. It chose <code>float</code> because it can keep the decimal part. Converting to <code>int</code> would have thrown away the <code>.5</code>.</p>
+    <p>The same happens with <code>bool</code>: <code>True</code> is treated as 1 and <code>False</code> as 0.</p>
+    <pre><code>print(True + 1)    # 2
+print(3 + True)    # 4</code></pre>
+    <p>So the order of "safe" conversion is: <strong>bool → int → float</strong>. Python moves towards the type that can hold more information.</p>
+    <p><strong>Important:</strong> Python will <strong>never</strong> automatically join a number and a text. That is exactly why <code>"25" + 5</code> failed above. For that, we need explicit conversion.</p>
+
+    <hr>
+
+    <h3>4.2 Explicit Conversion (manual)</h3>
+
+    <h4>What is it?</h4>
+    <p>Here <strong>you</strong> tell Python which type you want. Python gives us one simple function for each type:</p>
+    <table>
+      <tr><th>Function</th><th>Converts to</th><th>Example</th></tr>
+      <tr><td><code>int()</code></td><td>Whole number</td><td><code>int("25")</code> → 25</td></tr>
+      <tr><td><code>float()</code></td><td>Decimal number</td><td><code>float("3.14")</code> → 3.14</td></tr>
+      <tr><td><code>str()</code></td><td>Text</td><td><code>str(25)</code> → "25"</td></tr>
+      <tr><td><code>bool()</code></td><td>True / False</td><td><code>bool(0)</code> → False</td></tr>
+    </table>
+
+    <h4>Fixing our earlier error</h4>
+    <pre><code># Step 1: the value is text
+age = "25"
+
+# Step 2: convert text into a number
+age = int(age)
+
+# Step 3: now math works
+print(age + 5)          # 30
+print(type(age))        # &lt;class 'int'&gt;</code></pre>
+    <p>That's it — one line of conversion fixes the problem.</p>
+
+    <h3>4.3 <code>int()</code> in Detail</h3>
+    <p><code>int()</code> can take text, a float, or a bool:</p>
+    <pre><code>print(int("25"))       # 25
+print(int("-7"))       # -7
+print(int(" 42 "))     # 42   — extra spaces around the text are ignored
+print(int(25.9))       # 25   — decimal part is CUT OFF
+print(int(-2.9))       # -2   — cut off, not rounded down
+print(int(True))       # 1</code></pre>
+    <p>The most important thing to remember: <code>int()</code> <strong>does not round</strong>. It simply removes everything after the decimal point. If you want proper rounding, use <code>round()</code>:</p>
+    <pre><code>print(int(25.9))          # 25
+print(round(25.567, 2))   # 25.57</code></pre>
+
+    <h3>4.4 <code>float()</code> in Detail</h3>
+    <pre><code>print(float("3.14"))   # 3.14
+print(float("5"))      # 5.0   — a whole-number text works too
+print(float(10))       # 10.0
+print(float(True))     # 1.0</code></pre>
+
+    <h3>4.5 <code>str()</code> in Detail</h3>
+    <p><code>str()</code> can turn almost anything into text, and it never fails:</p>
+    <pre><code>print(str(25))        # 25
+print(str(3.14))      # 3.14
+print(str(True))      # True
+print(str(None))      # None
+print(str([1, 2]))    # [1, 2]</code></pre>
+    <p>These all look the same as before on the screen, but now each one is a <code>str</code>. The same problem happens when you join a number to a sentence:</p>
+    <pre><code>age = 25
+
+print("Age: " + age)         # TypeError!
+print("Age: " + str(age))    # Age: 25
+print(f"Age: {age}")         # Age: 25  — f-string does it for us</code></pre>
+
+    <h3>4.6 <code>bool()</code> in Detail</h3>
+    <p><code>bool()</code> answers one question: <strong>"Is there something in this value, or is it empty?"</strong></p>
+    <table>
+      <tr><th>Gives False</th><th>Gives True</th></tr>
+      <tr><td><code>0</code> and <code>0.0</code></td><td>Any other number, like <code>5</code> or <code>-7</code></td></tr>
+      <tr><td><code>""</code> (empty text)</td><td>Any text with at least one character</td></tr>
+      <tr><td><code>[]</code> (empty list)</td><td>A list with something inside</td></tr>
+      <tr><td><code>None</code></td><td>—</td></tr>
+    </table>
+    <pre><code>print(bool(0))        # False
+print(bool(5))        # True
+print(bool(""))       # False
+print(bool("hello"))  # True
+print(bool([]))       # False
+print(bool([0]))      # True   — the list is not empty, even though it holds a 0</code></pre>
+
+    <h3>4.7 Converting Collections</h3>
+    <p>The same idea works for lists, tuples and sets. This is very useful in real projects:</p>
+    <pre><code>print(list("abc"))            # ['a', 'b', 'c']
+print(tuple([1, 2, 3]))       # (1, 2, 3)
+print(list((1, 2)))           # [1, 2]
+
+# Removing duplicates using set()
+marks = [80, 90, 80, 70, 90]
+unique_marks = list(set(marks))
+print(set(marks))             # {80, 90, 70}  (order may be different)</code></pre>
+    <p>Converting a list to a <code>set</code> removes all duplicate values. Then <code>list()</code> turns it back into a list.</p>
+
+    <hr>
+
+    <h2>5. Conversions That Confuse Beginners</h2>
+
+    <h3>5.1 Text with a decimal point → int()</h3>
+    <pre><code>int("25.5")     # ValueError: invalid literal for int() with base 10: '25.5'</code></pre>
+    <p><code>int()</code> cannot read a text that has a decimal point. First convert it to <code>float</code>, then to <code>int</code>:</p>
+    <pre><code>int(float("25.5"))    # 25</code></pre>
+    <p>Notice that the <code>.5</code> is lost, because <code>int()</code> cuts off the decimal part.</p>
+
+    <h3>5.2 Text that is not a number at all</h3>
+    <pre><code>int("abc")      # ValueError: invalid literal for int() with base 10: 'abc'
+int("")         # ValueError — empty text is also not a number</code></pre>
+    <p>Python can only convert text that <strong>actually looks like a number</strong>. Words like <code>"abc"</code> or <code>"twenty"</code> will always give a <code>ValueError</code>.</p>
+
+    <h3>5.3 bool() on text</h3>
+    <pre><code>print(bool("False"))   # True   — surprise!
+print(bool("0"))       # True   — also a surprise!</code></pre>
+    <p>This surprises almost everyone. <code>bool("False")</code> gives <code>True</code>! The reason is simple: Python does not read the meaning of the word. It only checks <strong>whether the text is empty or not</strong>. The text <code>"False"</code> has letters in it, so it is not empty, so the answer is <code>True</code>. The same is true for <code>"0"</code> — it is a text with one character.</p>
+    <blockquote>Simple rule: 0, empty text, and empty collections are False. Everything else is True.</blockquote>
+
+    <h3>5.4 Types you can be sure about</h3>
+    <p>Three things that often confuse students, in one place:</p>
+    <table>
+      <tr><th>Code</th><th>Result</th><th>Why</th></tr>
+      <tr><td><code>int("10") + int("5")</code></td><td>15</td><td>Both converted to numbers first</td></tr>
+      <tr><td><code>"10" + "5"</code></td><td>"105"</td><td>Two texts are joined</td></tr>
+      <tr><td><code>int("10" + "5")</code></td><td>105</td><td>Join first, then convert</td></tr>
+    </table>
+
+    <hr>
+
+    <h2>6. Converting Safely with try / except</h2>
+    <p>What if a user types <code>"abc"</code> when you ask for their age? Your program will crash with a <code>ValueError</code>. In real programs, we handle this using <code>try</code> and <code>except</code>:</p>
+    <pre><code>user_input = "abc"
+
+try:
+    age = int(user_input)
+    print("Your age is", age)
+except ValueError:
+    print("Please enter a valid number.")
+
+# Please enter a valid number.</code></pre>
+    <p><strong>How it works:</strong> Python first <em>tries</em> to run the code inside <code>try</code>. If a <code>ValueError</code> happens, it does not crash — it runs the <code>except</code> block instead.</p>
+    <p>You can put this in a small helper function and use it again and again:</p>
+    <pre><code>def to_int(value, default=0):
+    try:
+        return int(value)
+    except ValueError:
+        return default
+
+print(to_int("25"))     # 25
+print(to_int("abc"))    # 0
+print(to_int("25.5"))   # 0   — int() cannot read decimal text, so the default is used</code></pre>
+
+    <hr>
+
+    <h2>7. Practical Examples</h2>
+
+    <h3>Example 1: Age Next Year</h3>
+    <p>A user types their age, and we tell them their age next year. The <code>input()</code> function always returns <strong>text</strong>, so we must convert it.</p>
+    <pre><code># Step 1: take input (arrives as text)
+user_input = input("Enter your age: ")     # user types 30
+
+# Step 2: convert text to a number
+age = int(user_input)
+
+# Step 3: do the math
+next_year_age = age + 1
+
+# Step 4: show the result
+print("Next year you will be " + str(next_year_age))
+# Next year you will be 31</code></pre>
+    <p>See the pattern? <strong>Convert in → Calculate → Convert out.</strong> If you remember this one pattern, most beginner type errors will disappear.</p>
+
+    <h3>Example 2: Shop Bill</h3>
+    <p>Data from a file or website usually comes as text. Here the price and quantity arrive as strings:</p>
+    <pre><code>price = "499.99"     # text
+qty = "3"            # text
+
+total = float(price) * int(qty)
+print(total)                 # 1499.97
+print(f"Total bill: Rs {total}")   # Total bill: Rs 1499.97</code></pre>
+    <p>We used <code>float()</code> for the price (it has decimals) and <code>int()</code> for the quantity (it is a whole number). Choosing the right function is part of the skill.</p>
+
+    <h3>Example 3: Average Marks</h3>
+    <pre><code>marks = ["80", "90", "70"]      # all are text
+
+total = 0
+for m in marks:
+    total = total + int(m)      # convert each one before adding
+
+average = total / len(marks)
+print(average)                  # 80.0</code></pre>
+
+    <hr>
+
+    <h2>8. Common Mistakes</h2>
+    <table>
+      <tr><th>Mistake</th><th>What happens</th><th>Fix</th></tr>
+      <tr><td>Adding text and number: <code>"25" + 5</code></td><td><code>TypeError</code></td><td>Convert with <code>int()</code></td></tr>
+      <tr><td>Joining number to sentence: <code>"Age: " + 25</code></td><td><code>TypeError</code></td><td>Use <code>str()</code> or an f-string</td></tr>
+      <tr><td>Using <code>int("25.5")</code></td><td><code>ValueError</code></td><td>Use <code>int(float("25.5"))</code></td></tr>
+      <tr><td>Using <code>int("abc")</code></td><td><code>ValueError</code></td><td>Check the input, or use <code>try / except</code></td></tr>
+      <tr><td>Thinking <code>int(9.9)</code> gives 10</td><td>Gives 9</td><td>Use <code>round()</code> if you want rounding</td></tr>
+      <tr><td>Thinking <code>bool("False")</code> is False</td><td>Gives True</td><td>Compare instead: <code>text == "False"</code></td></tr>
+      <tr><td>Writing <code>true</code> or <code>false</code></td><td><code>NameError</code></td><td>Use <code>True</code> and <code>False</code></td></tr>
+    </table>
+
+    <hr>
+
+    <h2>Quick Recap</h2>
+    <table>
+      <tr><th>Situation</th><th>What to do</th></tr>
+      <tr><td>Store a value</td><td>Use a variable: <code>age = 25</code></td></tr>
+      <tr><td>Check the type of a value</td><td>Use <code>type()</code> or <code>isinstance()</code></td></tr>
+      <tr><td>Data is text, but you need to do math</td><td>Convert with <code>int()</code> or <code>float()</code></td></tr>
+      <tr><td>Number needs to go inside a sentence</td><td>Convert with <code>str()</code>, or use an f-string</td></tr>
+      <tr><td>Text has a decimal point, you want a whole number</td><td>Use <code>int(float(...))</code></td></tr>
+      <tr><td>Text is not a number at all (like "abc")</td><td>It cannot be converted — you get a <code>ValueError</code>. Use <code>try / except</code></td></tr>
+      <tr><td>Checking True / False of text</td><td>Any non-empty text is <code>True</code>, only <code>""</code> is <code>False</code></td></tr>
+      <tr><td>Remove duplicates from a list</td><td><code>list(set(my_list))</code></td></tr>
+    </table>
+    <p>Getting comfortable with variables and type conversion early makes everything ahead — reading files, cleaning data, working with pandas — much easier. Most "strange errors" that beginners face come from a type mismatch like the ones we saw here.</p>
+
+    <hr>
+
+    <h2>Practice Questions</h2>
+    <p>Try to answer these first, without running the code. Then check with Python.</p>
+    <ol>
+      <li>What is the type of <code>3 + 4.0</code>?</li>
+      <li>What does <code>"7" * 3</code> give?</li>
+      <li>What does <code>int(8.99)</code> give?</li>
+      <li>What does <code>bool("0")</code> give?</li>
+      <li>Why does <code>"Total: " + 50</code> fail, and how will you fix it?</li>
+      <li>Which is correct for the text <code>"12.75"</code> — <code>int()</code> or <code>float()</code>?</li>
+    </ol>
+
+    <h4>Answers</h4>
+    <ol>
+      <li><code>float</code> — the result is <code>7.0</code>, because Python converts the <code>int</code> to <code>float</code> automatically.</li>
+      <li><code>"777"</code> — text is repeated, not multiplied.</li>
+      <li><code>8</code> — <code>int()</code> cuts off the decimal part.</li>
+      <li><code>True</code> — it is a non-empty text.</li>
+      <li>Python cannot join text and a number. Fix: <code>"Total: " + str(50)</code> or <code>f"Total: {50}"</code>.</li>
+      <li><code>float()</code> — because the text has a decimal point.</li>
+    </ol>
+
+  </article>
+
+  <footer>
+    <div>© 2026 notebook. · articles added regularly</div>
+    <div>
+      <a href="../index.html">Home</a>
+    </div>
+  </footer>
+</div>
+
+</body>
+</html>

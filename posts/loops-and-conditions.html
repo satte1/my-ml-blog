@@ -1,0 +1,394 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Loops and Conditions: notebook.</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,500;0,9..144,600;1,9..144,500&family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans:wght@400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../style.css">
+</head>
+<body>
+
+<div class="wrap">
+  <header>
+    <div class="nav-row">
+      <div class="brand">notebook.</div>
+      <nav>
+        <a href="../index.html#topics">Topics</a>
+        <a href="../index.html#about">About</a>
+        <a href="../index.html#courses">Courses</a>
+        <a href="../index.html#book" class="cta">Book a Call</a>
+      </nav>
+    </div>
+  </header>
+
+  <div class="article-header">
+    <a href="../index.html#topics" class="back-link">← Back to all articles</a>
+    <div class="article-meta">
+      <span>SEP 2026</span>
+      <span>By Mukesh</span>
+      <span class="tag">Python</span>
+    </div>
+    <h1>Loops and Conditions: for, while, if</h1>
+  </div>
+
+  <article class="article-body">
+
+    <h2>Why This Topic Matters</h2>
+    <p>So far we have learned how to store data with <a href="variables-data-types.html">variables</a> and group it with <a href="collections-list-tuple-set-dict.html">collections</a>. But a program is not just data sitting there. It needs to <strong>make decisions</strong> and <strong>repeat actions</strong>. That is exactly what <code>if</code>, <code>for</code> and <code>while</code> do.</p>
+    <p>By the end of this post you will know:</p>
+    <ol>
+      <li>How to make decisions in code with <code>if</code>, <code>elif</code> and <code>else</code></li>
+      <li>How to repeat an action with <code>for</code> and <code>while</code></li>
+      <li>How to control a loop with <code>break</code>, <code>continue</code> and the loop <code>else</code></li>
+      <li>Which loop to pick for which situation</li>
+    </ol>
+
+    <hr>
+
+    <h2>1. Conditions: if, elif, else</h2>
+
+    <h3>1.1 What is a Condition?</h3>
+    <blockquote>A condition is a statement that runs only when something is True.</blockquote>
+    <p>Every condition is built on a comparison, something that evaluates to <code>True</code> or <code>False</code> (a <code>bool</code>, as we saw in the data types post).</p>
+
+    <h4>Simple Example</h4>
+    <pre><code>age = 20
+
+if age >= 18:
+    print("Adult")
+else:
+    print("Minor")
+
+# Adult</code></pre>
+    <p>Notice the <strong>indentation</strong>. Python uses spaces (4 is standard) to decide what belongs inside the <code>if</code> block. This is not just style, it is a rule. Wrong indentation causes an <code>IndentationError</code>.</p>
+
+    <h3>1.2 Multiple Conditions with elif</h3>
+    <p>Use <code>elif</code> ("else if") to check more than one condition in order:</p>
+    <pre><code>marks = 75
+
+if marks >= 90:
+    grade = "A"
+elif marks >= 75:
+    grade = "B"
+elif marks >= 60:
+    grade = "C"
+else:
+    grade = "D"
+
+print(grade)   # B</code></pre>
+    <p>Python checks each condition from top to bottom and stops at the <strong>first</strong> one that is <code>True</code>. Since <code>marks</code> is 75, it does not even look at the <code>marks &gt;= 90</code> line result, it jumps straight to <code>marks &gt;= 75</code>, which is true, sets the grade, and skips the rest.</p>
+
+    <h3>1.3 Combining Conditions</h3>
+    <p>Use <code>and</code>, <code>or</code> and <code>not</code> to combine more than one condition:</p>
+    <pre><code>x = 10
+
+print(x > 5 and x < 20)   # True   both must be true
+print(x > 5 or x < 2)     # True   at least one must be true
+print(not (x > 5))        # False  flips True to False</code></pre>
+
+    <h4>Comparison operators, quick reference</h4>
+    <table>
+      <tr><th>Operator</th><th>Meaning</th></tr>
+      <tr><td><code>==</code></td><td>equal to</td></tr>
+      <tr><td><code>!=</code></td><td>not equal to</td></tr>
+      <tr><td><code>&gt;</code>, <code>&lt;</code></td><td>greater than, less than</td></tr>
+      <tr><td><code>&gt;=</code>, <code>&lt;=</code></td><td>greater than or equal to, less than or equal to</td></tr>
+    </table>
+
+    <hr>
+
+    <h2>2. The for Loop</h2>
+
+    <h3>2.1 What is it?</h3>
+    <blockquote>A for loop goes through each item of a collection, one at a time.</blockquote>
+    <p>Use a <code>for</code> loop when you know what you are looping over, a list, a range of numbers, or any other collection.</p>
+
+    <h4>Simple Example</h4>
+    <pre><code>fruits = ["apple", "banana", "cherry"]
+
+for fruit in fruits:
+    print(fruit)
+
+# apple
+# banana
+# cherry</code></pre>
+    <p>On each round, the loop variable (<code>fruit</code> here) is set to the next item, until there are no items left.</p>
+
+    <h3>2.2 Looping with range()</h3>
+    <p>To repeat something a fixed number of times, use <code>range()</code>. It generates a sequence of numbers without you having to write them out.</p>
+    <pre><code>for i in range(5):
+    print(i, end=" ")
+# 0 1 2 3 4
+
+print()
+for i in range(2, 10, 2):     # start, stop, step
+    print(i, end=" ")
+# 2 4 6 8
+
+print()
+for i in range(5, 0, -1):     # counting down
+    print(i, end=" ")
+# 5 4 3 2 1</code></pre>
+    <p><code>range(5)</code> starts at 0 and goes up to, but not including, 5. When you give three numbers, they mean start, stop and step, and a negative step counts down.</p>
+
+    <h3>2.3 Getting the Position Too, with enumerate()</h3>
+    <pre><code>for i, fruit in enumerate(["a", "b", "c"]):
+    print(i, fruit)
+
+# 0 a
+# 1 b
+# 2 c</code></pre>
+    <p><code>enumerate()</code> gives you both the position and the item, so you do not need to manage a counter variable yourself.</p>
+
+    <h3>2.4 A Running Total</h3>
+    <pre><code>total = 0
+for n in [1, 2, 3, 4, 5]:
+    total += n     # same as total = total + n
+
+print(total)   # 15</code></pre>
+
+    <hr>
+
+    <h2>3. The while Loop</h2>
+
+    <h3>3.1 What is it?</h3>
+    <blockquote>A while loop keeps repeating as long as a condition stays True.</blockquote>
+    <p>Use a <code>while</code> loop when you do <strong>not</strong> know in advance how many times you need to repeat, only the condition that should stop it.</p>
+
+    <h4>Simple Example</h4>
+    <pre><code>count = 0
+while count < 5:
+    print(count, end=" ")
+    count += 1
+
+# 0 1 2 3 4</code></pre>
+    <p>Three things must be true for a <code>while</code> loop to behave correctly: a starting value (<code>count = 0</code>), a condition (<code>count &lt; 5</code>), and something inside the loop that eventually makes the condition false (<code>count += 1</code>). Forget the last part, and the loop never stops, this is called an <strong>infinite loop</strong>.</p>
+
+    <h3>3.2 Example: Factorial</h3>
+    <pre><code>n = 5
+fact = 1
+while n > 0:
+    fact *= n
+    n -= 1
+
+print(fact)   # 120</code></pre>
+
+    <h3>3.3 while True and break</h3>
+    <p>Sometimes it is cleaner to loop forever and use <code>break</code> to stop when you are ready:</p>
+    <pre><code>i = 0
+while True:
+    if i >= 3:
+        break
+    print("loop", i)
+    i += 1
+
+# loop 0
+# loop 1
+# loop 2</code></pre>
+
+    <hr>
+
+    <h2>4. Controlling a Loop: break, continue, else</h2>
+
+    <h3>4.1 break, Stop the Loop Completely</h3>
+    <pre><code>for i in range(10):
+    if i == 5:
+        break
+    print(i, end=" ")
+
+# 0 1 2 3 4</code></pre>
+    <p>As soon as <code>i</code> reaches 5, the loop stops entirely, even though <code>range(10)</code> had more numbers left.</p>
+
+    <h3>4.2 continue, Skip Just This Round</h3>
+    <pre><code>for i in range(5):
+    if i % 2 == 0:
+        continue
+    print(i, end=" ")
+
+# 1 3</code></pre>
+    <p><code>continue</code> skips the rest of the current round and jumps straight to the next one. Here, every even number gets skipped, so only the odd numbers get printed.</p>
+
+    <h3>4.3 The Loop else, an Underused Feature</h3>
+    <p>Both <code>for</code> and <code>while</code> loops can have an <code>else</code> block. It runs only if the loop finished normally, without hitting a <code>break</code>.</p>
+    <pre><code>for i in range(3):
+    print(i)
+else:
+    print("done")
+
+# 0
+# 1
+# 2
+# done</code></pre>
+    <pre><code>for i in range(10):
+    if i == 3:
+        break
+    print(i)
+else:
+    print("not printed")
+
+# 0
+# 1
+# 2
+# (else does NOT run, because break happened)</code></pre>
+    <p>This is useful for search-style logic: "did I find what I was looking for, or did I go through the whole list without success?"</p>
+    <pre><code>tries = ["xyz", "123", "abc"]
+password = "abc"
+attempts = 0
+idx = 0
+
+while attempts < 3:
+    entered = tries[idx]
+    idx += 1
+    attempts += 1
+    if entered == password:
+        print("Correct")
+        break
+else:
+    print("Locked out")
+
+# Correct</code></pre>
+
+    <hr>
+
+    <h2>5. Nested Loops</h2>
+    <p>A loop can sit inside another loop. The inner loop finishes completely for every single round of the outer loop.</p>
+    <pre><code>for i in range(3):
+    for j in range(3):
+        print(i, j, end=" | ")
+
+# 0 0 | 0 1 | 0 2 | 1 0 | 1 1 | 1 2 | 2 0 | 2 1 | 2 2 |</code></pre>
+    <p>This pattern is common when working with grids, tables, or comparing every item in one list against every item in another.</p>
+
+    <hr>
+
+    <h2>6. for vs while: Which One to Use</h2>
+    <table>
+      <tr><th>Situation</th><th>Use</th></tr>
+      <tr><td>You know the collection or the count of repeats in advance</td><td><code>for</code></td></tr>
+      <tr><td>You are looping over items in a list, string, or other collection</td><td><code>for</code></td></tr>
+      <tr><td>You are repeating until some condition becomes true, and you do not know how many rounds it will take</td><td><code>while</code></td></tr>
+      <tr><td>You are waiting for user input to be valid, or a retry limit</td><td><code>while</code></td></tr>
+    </table>
+    <p>A simple way to decide: if you can say "repeat this for every item in X", reach for <code>for</code>. If you can only say "keep repeating until X happens", reach for <code>while</code>.</p>
+
+    <hr>
+
+    <h2>7. A Shortcut: List Comprehension</h2>
+    <p>Once you are comfortable with <code>for</code> and <code>if</code>, Python gives you a shorter way to build a list in one line:</p>
+    <pre><code>nums = [1, 2, 3, 4, 5, 6]
+
+evens = [n for n in nums if n % 2 == 0]
+print(evens)          # [2, 4, 6]
+
+squares = [n * n for n in range(5)]
+print(squares)         # [0, 1, 4, 9, 16]</code></pre>
+    <p>This does exactly the same thing as a normal loop that builds a list with <code>.append()</code>, but in one line. It is worth knowing how to read, even before you start writing your own.</p>
+
+    <hr>
+
+    <h2>8. Practical Examples</h2>
+
+    <h3>Example 1: Grading Students</h3>
+    <pre><code>students = [
+    {"name": "A", "marks": 92},
+    {"name": "B", "marks": 68},
+    {"name": "C", "marks": 40}
+]
+
+for s in students:
+    if s["marks"] >= 90:
+        grade = "A"
+    elif s["marks"] >= 60:
+        grade = "B"
+    else:
+        grade = "Fail"
+    print(f"{s['name']}: {grade}")
+
+# A: A
+# B: B
+# C: Fail</code></pre>
+
+    <h3>Example 2: Sum of Even Numbers Only</h3>
+    <pre><code>total = 0
+for n in range(1, 11):
+    if n % 2 != 0:
+        continue
+    total += n
+
+print(total)   # 30</code></pre>
+
+    <h3>Example 3: Simple Login Retry</h3>
+    <pre><code>correct_password = "python123"
+attempts = 0
+max_attempts = 3
+
+while attempts < max_attempts:
+    entered = input("Enter password: ")
+    attempts += 1
+    if entered == correct_password:
+        print("Login successful")
+        break
+    print(f"Wrong password. {max_attempts - attempts} attempts left")
+else:
+    print("Account locked")</code></pre>
+
+    <hr>
+
+    <h2>9. Common Mistakes</h2>
+    <table>
+      <tr><th>Mistake</th><th>What happens</th><th>Fix</th></tr>
+      <tr><td>Wrong indentation inside <code>if</code> or a loop</td><td><code>IndentationError</code></td><td>Use consistent spaces (4 is standard) for every block</td></tr>
+      <tr><td>Forgetting to update the loop variable in a <code>while</code> loop</td><td>Infinite loop, program never stops</td><td>Make sure something inside the loop moves it toward the stop condition</td></tr>
+      <tr><td>Using <code>=</code> instead of <code>==</code> in a condition</td><td><code>SyntaxError</code></td><td><code>=</code> assigns a value, <code>==</code> compares two values</td></tr>
+      <tr><td>Expecting the loop <code>else</code> to run after a <code>break</code></td><td>It is silently skipped</td><td>Remember: <code>else</code> only runs if the loop finished without a <code>break</code></td></tr>
+      <tr><td>Using <code>break</code> in a nested loop expecting it to stop both loops</td><td>Only the inner loop stops</td><td>Use a flag variable, or put the loops in a function and <code>return</code></td></tr>
+    </table>
+
+    <hr>
+
+    <h2>Quick Recap</h2>
+    <table>
+      <tr><th>You need</th><th>Use</th></tr>
+      <tr><td>To run code only when something is true</td><td><code>if</code>, <code>elif</code>, <code>else</code></td></tr>
+      <tr><td>To repeat over a known collection or count</td><td><code>for</code></td></tr>
+      <tr><td>To repeat until a condition becomes true</td><td><code>while</code></td></tr>
+      <tr><td>To stop a loop early</td><td><code>break</code></td></tr>
+      <tr><td>To skip just this round of a loop</td><td><code>continue</code></td></tr>
+      <tr><td>To run code only if a loop finished without a break</td><td>loop <code>else</code></td></tr>
+    </table>
+    <p><code>if</code>, <code>for</code> and <code>while</code> are the building blocks that make a program actually do something with the data it holds. Almost every program you write, from a small script to a full ML pipeline, is built on some combination of these three.</p>
+
+    <hr>
+
+    <h2>Practice Questions</h2>
+    <ol>
+      <li>What does <code>range(3, 12, 3)</code> produce?</li>
+      <li>What is the difference between <code>break</code> and <code>continue</code>?</li>
+      <li>Write the condition that checks if a number <code>n</code> is between 10 and 20, including both ends.</li>
+      <li>Why can a <code>while True</code> loop be dangerous if you forget the <code>break</code>?</li>
+      <li>Does the loop <code>else</code> run if the loop finishes normally, with no <code>break</code>?</li>
+    </ol>
+
+    <h4>Answers</h4>
+    <ol>
+      <li><code>3, 6, 9</code>, since it starts at 3, stops before 12, and steps by 3.</li>
+      <li><code>break</code> stops the loop completely. <code>continue</code> skips only the current round and moves to the next one.</li>
+      <li><code>n &gt;= 10 and n &lt;= 20</code></li>
+      <li>It repeats forever with no way to stop, freezing the program, unless something inside eventually calls <code>break</code>.</li>
+      <li>Yes, the loop <code>else</code> runs whenever the loop completes without hitting a <code>break</code>.</li>
+    </ol>
+
+  </article>
+
+  <footer>
+    <div>© 2026 notebook. · articles added regularly</div>
+    <div>
+      <a href="../index.html">Home</a>
+    </div>
+  </footer>
+</div>
+
+</body>
+</html>
